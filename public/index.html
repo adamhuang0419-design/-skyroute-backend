@@ -232,13 +232,18 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
 
 <script>
 (function(){
-  const state = { from:'台北', to:'東京', date:'', pax:1, flight:null, seatId:null, seatLabel:null };
+  const state = { from:'台北', to:'東京', date:'', pax:1, flight:null, currency:'TWD', flightId:null, seatId:null, seatLabel:null };
   const $ = id => document.getElementById(id);
 
   const d = new Date(); d.setDate(d.getDate()+14);
   $('dateInp').value = d.toISOString().slice(0,10);
 
-  function fmtMoney(n){ return 'NT$' + Math.round(n).toLocaleString('en-US'); }
+  function fmtMoney(n, currency){
+    const cur = currency || 'TWD';
+    const symbols = { TWD:'NT$', USD:'US$', GBP:'£', EUR:'€', JPY:'¥' };
+    const prefix = symbols[cur] || (cur + ' ');
+    return prefix + Math.round(n).toLocaleString('en-US');
+  }
 
   function goStep(n){
     for(let i=1;i<=5;i++){ $('step'+i).classList.toggle('active', i===n); }
@@ -270,7 +275,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
         row.className='flight-row';
         row.innerHTML =
           '<div class="fl-l"><div class="airline">'+f.airline+' '+f.flightNo+'</div><div class="time">'+f.dep+' – '+f.arr+'　'+f.duration+'</div></div>'+
-          '<div class="fl-r"><div class="price">'+fmtMoney(f.totalPrice)+'</div><div class="tag">'+(f.stops===0?'直飛':'轉機 1 次')+'</div></div>';
+          '<div class="fl-r"><div class="price">'+fmtMoney(f.totalPrice, f.currency)+'</div><div class="tag">'+(f.stops===0?'直飛':'轉機 1 次')+'</div></div>';
         row.addEventListener('click', function(){ pickFlight(f); });
         list.appendChild(row);
       });
@@ -286,7 +291,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
   $('backTo1').addEventListener('click', function(){ goStep(1); });
 
   async function pickFlight(f){
-    state.flight = f; state.seatId=null; state.seatLabel=null;
+    state.flight = f; state.seatId=null; state.seatLabel=null; state.flightId=null;
     $('seatMeta').textContent = f.airline+' '+f.flightNo+'　'+state.date+'　'+f.dep+' – '+f.arr;
     const grid=$('seatGrid');
     grid.style.display='block';
@@ -294,7 +299,15 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
     $('seatError').style.display='none';
     goStep(3);
     try{
-      const res = await fetch('/api/flights/'+f.id+'/seats');
+      const selRes = await fetch('/api/select-offer', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ source:f.source, localFlightId:f.localFlightId, airline:f.airline, flightNo:f.flightNo, dep:f.dep, arr:f.arr, duration:f.duration, stops:f.stops, totalPrice:f.totalPrice, currency:f.currency, from:state.from, to:state.to, pax:state.pax })
+      });
+      const sel = await selRes.json();
+      if(!selRes.ok) throw new Error(sel.error || 'select failed');
+      state.flightId = sel.flightId; state.currency = sel.currency || f.currency || 'TWD';
+
+      const res = await fetch('/api/flights/'+state.flightId+'/seats');
       const seats = await res.json();
       if(!res.ok) throw new Error(seats.error || 'seats failed');
       grid.style.display='grid';
@@ -336,7 +349,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
     try{
       const res = await fetch('/api/bookings', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ flightId: state.flight.id, seatId: state.seatId, name, email, phone, pax: state.pax, from: state.from, to: state.to, date: state.date })
+        body: JSON.stringify({ flightId: state.flightId, seatId: state.seatId, name, email, phone, pax: state.pax, from: state.from, to: state.to, date: state.date })
       });
       const data = await res.json();
       if(!res.ok){ $('passError').textContent = data.error || '訂購失敗，請稍後再試'; $('passError').style.display=''; return; }
@@ -348,7 +361,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
         sumRow('日期時間', state.date+'　'+state.flight.dep+' – '+state.flight.arr)+
         sumRow('座位', state.seatLabel)+
         sumRow('乘客', name+'　x '+state.pax)+
-        '<div class="sum-total"><span>總金額</span><span>'+fmtMoney(data.totalPrice)+'</span></div>';
+        '<div class="sum-total"><span>總金額</span><span>'+fmtMoney(data.totalPrice, state.currency)+'</span></div>';
       goStep(5);
     }catch(e){
       $('passError').textContent='連線失敗，請稍後再試';
