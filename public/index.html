@@ -7,15 +7,19 @@
 <title>Skyroute</title>
 <style>
 :root{
-  --bg:#18181b;
-  --bg-secondary:#0a0a0c;
-  --ink:#f2f2f0;
-  --ink-soft:#98989d;
-  --line:#333338;
-  --accent:#c9a961;
-  --accent-hover:#d6b876;
-  --danger:#ff453a;
-  --success:#c9a961;
+  --bg:#050507;
+  --panel:rgba(255,255,255,0.035);
+  --panel-border:rgba(255,255,255,0.08);
+  --glass-bg:rgba(255,255,255,0.07);
+  --glass-border:rgba(255,255,255,0.22);
+  --ink:#f5f5f7;
+  --ink-soft:#96969e;
+  --ink-faint:#5c5c63;
+  --line:rgba(255,255,255,0.08);
+  --a1:#7c7cf0;
+  --a2:#e36bc9;
+  --a3:#5ac8fa;
+  --danger:#ff5b52;
 }
 *{box-sizing:border-box;}
 body{
@@ -23,108 +27,155 @@ body{
   min-height:100vh;
   display:flex;
   justify-content:center;
-  background:
-    radial-gradient(ellipse 800px 500px at 50% -10%, rgba(201,169,97,0.08), transparent 70%),
-    var(--bg-secondary);
-  padding:48px 20px;
+  background:var(--bg);
+  background-image:
+    radial-gradient(720px 520px at 12% -8%, rgba(124,124,240,0.16), transparent 60%),
+    radial-gradient(640px 480px at 100% 18%, rgba(227,107,201,0.11), transparent 60%),
+    radial-gradient(560px 420px at 30% 100%, rgba(90,200,250,0.08), transparent 60%);
+  padding:52px 18px;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
   color:var(--ink);
   -webkit-font-smoothing:antialiased;
 }
-.shell{width:100%;max-width:440px;}
-header.top{margin-bottom:20px;padding:0 4px;}
-header.top .mark{font-size:17px;font-weight:600;letter-spacing:0.03em;}
+.shell{width:100%;max-width:430px;perspective:1400px;}
+header.top{margin-bottom:26px;padding:0 6px;display:flex;align-items:baseline;gap:10px;}
+header.top .mark{font-size:15px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;}
+header.top .dot{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));}
 .panel{
-  background:var(--bg);
-  border-radius:20px;
-  padding:32px 28px 28px;
-  border:1px solid rgba(255,255,255,0.06);
-  box-shadow:0 24px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
+  position:relative;
+  background:var(--panel);
+  backdrop-filter:blur(28px) saturate(140%);
+  -webkit-backdrop-filter:blur(28px) saturate(140%);
+  border-radius:26px;
+  padding:34px 26px 28px;
+  border:1px solid var(--panel-border);
+  box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow:hidden;
 }
-.track{display:flex;gap:6px;margin-bottom:28px;}
-.track i{flex:1;height:4px;border-radius:2px;background:var(--line);font-style:normal;}
-.track i.done,.track i.on{background:var(--accent);}
-h2{font-size:24px;font-weight:600;letter-spacing:-0.01em;margin:0 0 22px;}
+.track{display:flex;gap:5px;margin-bottom:30px;}
+.track i{flex:1;height:3px;border-radius:2px;background:var(--line);font-style:normal;}
+.track i.done{background:var(--a1);}
+.track i.on{background:linear-gradient(90deg,var(--a1),var(--a2));}
+h2{
+  font-size:33px;font-weight:800;letter-spacing:-0.035em;line-height:1.08;
+  margin:0 0 26px;
+}
 .field{margin-bottom:16px;}
-.field label{display:block;font-size:13px;color:var(--ink-soft);margin-bottom:6px;}
+.field label{display:block;font-size:12px;font-weight:600;letter-spacing:0.02em;color:var(--ink-soft);margin-bottom:7px;}
 .ico-input{position:relative;}
-.ico-input svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--ink-soft);pointer-events:none;}
+.ico-input svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-soft);pointer-events:none;z-index:1;}
 input,select{
-  width:100%;height:46px;border-radius:12px;border:1px solid var(--line);
-  background:var(--bg);padding:0 14px;font-size:16px;color:var(--ink);
+  width:100%;height:48px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(255,255,255,0.03);padding:0 14px;font-size:16px;color:var(--ink);
   font-family:inherit;appearance:none;-webkit-appearance:none;
-  transition:border-color .15s ease,box-shadow .15s ease;
+  transition:all .25s cubic-bezier(.16,1,.3,1);position:relative;
 }
-.ico-input input,.ico-input select{padding-left:40px;}
-input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 4px rgba(201,169,97,0.16);}
-input:disabled,select:disabled,button:disabled{opacity:0.55;cursor:not-allowed;}
+.ico-input input,.ico-input select{padding-left:41px;}
+input:focus,select:focus{
+  outline:none;border-color:var(--glass-border);
+  background:var(--glass-bg);
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:0 12px 34px rgba(0,0,0,0.4), 0 0 0 4px rgba(124,124,240,0.14);
+}
+input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .ico-input select{
   padding-right:36px;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2398989d' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;background-size:16px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2396969e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;background-size:15px;
 }
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .btn{
-  width:100%;height:48px;border-radius:980px;border:none;
-  font-size:16px;font-weight:500;font-family:inherit;cursor:pointer;
+  width:100%;height:50px;border-radius:16px;border:none;
+  font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;letter-spacing:-0.01em;
   display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:transform .12s ease,background .15s ease;
+  transition:transform .15s cubic-bezier(.16,1,.3,1),box-shadow .2s ease,background .2s ease;
 }
 .btn svg{width:18px;height:18px;flex:none;}
-.btn:active{transform:scale(0.97);}
-.btn-primary{background:var(--accent);color:#17170f;}
-.btn-primary:hover{background:var(--accent-hover);}
-.btn-secondary{background:var(--bg-secondary);color:var(--ink);border:1px solid rgba(255,255,255,0.07);}
-.btn-secondary:hover{background:#141417;}
-.btn-icon{width:48px;flex:none;padding:0;}
+.btn:active{transform:scale(0.965);}
+.btn-primary{background:linear-gradient(135deg,#fff,#e2e2e6);color:#0a0a0c;}
+.btn-primary:hover{box-shadow:0 10px 28px rgba(255,255,255,0.12);}
+.btn-secondary{
+  background:rgba(255,255,255,0.05);color:var(--ink);border:1px solid var(--line);
+}
+.btn-secondary:hover{background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:var(--glass-border);}
+.btn-icon{width:50px;flex:none;padding:0;}
 .btn-row{display:flex;gap:10px;}
 .btn-row .btn:not(.btn-icon){flex:1;}
 .error{font-size:13px;color:var(--danger);margin:-6px 0 14px;}
-.meta{font-size:14px;color:var(--ink-soft);margin:-14px 0 18px;}
+.meta{font-size:14px;color:var(--ink-soft);margin:-16px 0 20px;}
 .flight-list{border-top:1px solid var(--line);margin-bottom:22px;}
 .flight-row{
   display:flex;align-items:center;justify-content:space-between;
-  padding:16px 12px;margin:0 -12px;border-bottom:1px solid var(--line);
-  border-radius:12px;cursor:pointer;background:transparent;
-  transition:background .15s ease;
+  padding:17px 12px;margin:0 -12px;border-bottom:1px solid var(--line);
+  border-radius:16px;cursor:pointer;background:transparent;border:1px solid transparent;
+  transition:all .25s cubic-bezier(.16,1,.3,1);
 }
-.flight-row:hover{background:rgba(255,255,255,0.045);}
-.flight-row .airline{font-size:15px;font-weight:500;}
-.flight-row .time{font-size:13px;color:var(--ink-soft);margin-top:3px;}
+.flight-row:hover{
+  background:var(--glass-bg);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+  border-color:var(--glass-border);transform:translateY(-1px);
+  box-shadow:0 14px 32px rgba(0,0,0,0.35);
+}
+.flight-row .airline{font-size:15px;font-weight:700;letter-spacing:-0.01em;}
+.flight-row .time{font-size:13px;color:var(--ink-soft);margin-top:4px;}
 .flight-row .fl-r{text-align:right;}
-.flight-row .price{font-size:16px;font-weight:600;color:var(--accent);}
-.flight-row .tag{font-size:12px;color:var(--ink-soft);margin-top:3px;}
-.seat-legend{display:flex;gap:18px;font-size:13px;color:var(--ink-soft);margin:0 0 18px;}
+.flight-row .price{font-size:17px;font-weight:800;letter-spacing:-0.02em;
+  background:linear-gradient(135deg,var(--a3),var(--a1));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.flight-row .tag{font-size:11px;color:var(--ink-faint);margin-top:4px;}
+.seat-legend{display:flex;gap:16px;font-size:12px;color:var(--ink-soft);margin:0 0 18px;}
 .seat-legend span{display:inline-flex;align-items:center;gap:6px;}
-.sw{width:10px;height:10px;border-radius:3px;display:inline-block;}
-.seat-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:8px;}
+.sw{width:9px;height:9px;border-radius:3px;display:inline-block;}
+.seat-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-bottom:8px;}
 .seat{
-  aspect-ratio:1;border-radius:8px;border:1px solid var(--line);
-  background:var(--bg);font-size:12px;color:var(--ink-soft);font-family:inherit;
+  aspect-ratio:1;border-radius:9px;border:1px solid var(--line);
+  background:rgba(255,255,255,0.03);font-size:11px;color:var(--ink-soft);font-family:inherit;
   display:flex;align-items:center;justify-content:center;cursor:pointer;
-  transition:transform .1s ease,background .15s ease,color .15s ease,border-color .15s ease;
+  transition:all .2s cubic-bezier(.16,1,.3,1);
 }
-.seat:hover:not(.taken):not(.sel){border-color:var(--accent);}
-.seat.taken{background:var(--bg-secondary);color:#39393d;border-color:var(--bg-secondary);cursor:not-allowed;}
-.seat.sel{background:var(--accent);border-color:var(--accent);color:#17170f;transform:scale(1.04);}
-.summary-card{background:var(--bg-secondary);border-radius:14px;padding:18px 18px 6px;margin-bottom:20px;}
-.sum-row{display:flex;justify-content:space-between;font-size:14px;padding-bottom:12px;}
+.seat:hover:not(.taken):not(.sel){border-color:var(--a3);}
+.seat.taken{background:rgba(255,255,255,0.015);color:#333338;border-color:transparent;cursor:not-allowed;}
+.seat.sel{
+  background:linear-gradient(135deg,var(--a1),var(--a2));border-color:transparent;color:#fff;
+  transform:scale(1.08);box-shadow:0 8px 20px rgba(124,124,240,0.45);
+}
+.summary-card{
+  background:var(--glass-bg);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+  border:1px solid var(--glass-border);border-radius:18px;padding:20px 20px 6px;margin-bottom:20px;
+}
+.sum-row{display:flex;justify-content:space-between;font-size:14px;padding-bottom:13px;}
 .sum-row .k{color:var(--ink-soft);}
-.sum-total{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:14px 0;font-size:16px;font-weight:600;}
-.success-mark{width:56px;height:56px;border-radius:50%;background:var(--success);display:flex;align-items:center;justify-content:center;margin:4px auto 18px;}
-.success-mark svg{width:26px;height:26px;color:#17170f;}
-.ref{text-align:center;font-size:13px;color:var(--ink-soft);margin-bottom:2px;}
-.ref-code{text-align:center;font-size:22px;font-weight:600;letter-spacing:0.06em;margin-bottom:26px;color:var(--accent);}
+.sum-total{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:15px 0;font-size:17px;font-weight:800;}
+.success-mark{
+  width:60px;height:60px;border-radius:50%;margin:4px auto 20px;position:relative;
+  background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 12px 32px rgba(124,124,240,0.4);
+}
+.success-mark svg{width:27px;height:27px;color:#fff;}
+.ref{text-align:center;font-size:12px;color:var(--ink-soft);margin-bottom:3px;letter-spacing:0.02em;}
+.ref-code{
+  text-align:center;font-size:24px;font-weight:800;letter-spacing:0.05em;margin-bottom:28px;
+  background:linear-gradient(135deg,var(--a3),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.ai-loading{padding:30px 0;text-align:center;}
+.ai-loading-bar{height:3px;width:100%;border-radius:2px;overflow:hidden;position:relative;background:var(--line);margin-bottom:16px;}
+.ai-loading-bar::after{
+  content:'';position:absolute;top:0;bottom:0;width:45%;
+  background:linear-gradient(90deg,transparent,var(--a1),var(--a2),var(--a3),transparent);
+  animation:shimmerSlide 1.3s ease-in-out infinite;
+}
+@keyframes shimmerSlide{0%{transform:translateX(-110%);}100%{transform:translateX(320%);}}
+.ai-loading p{font-size:13px;color:var(--ink-soft);margin:0;animation:breathe 1.8s ease-in-out infinite;}
+@keyframes breathe{0%,100%{opacity:.45;}50%{opacity:1;}}
 .step{display:none;}
-.step.active{display:block;animation:in .4s cubic-bezier(.22,1,.36,1);}
-@keyframes in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20px;}
-@media (prefers-reduced-motion:reduce){.step.active{animation:none;}}
+.step.active{display:block;animation:stepIn .55s cubic-bezier(.16,1,.3,1);transform-style:preserve-3d;}
+@keyframes stepIn{from{opacity:0;transform:translateY(26px) translateZ(-50px) rotateX(6deg);}to{opacity:1;transform:translateY(0) translateZ(0) rotateX(0);}}
+footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:22px;letter-spacing:0.01em;}
+@media (prefers-reduced-motion:reduce){.step.active{animation:none;}.ai-loading-bar::after{animation:none;}.ai-loading p{animation:none;}}
 </style>
 </head>
 <body>
 <div class="shell">
-  <header class="top"><span class="mark">Skyroute</span></header>
+  <header class="top"><span class="dot"></span><span class="mark">Skyroute</span></header>
   <div class="panel">
     <div class="track"><i id="t1"></i><i id="t2"></i><i id="t3"></i><i id="t4"></i><i id="t5"></i></div>
 
@@ -168,7 +219,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
       </div>
       <p class="error" id="searchError" style="display:none;"></p>
       <button class="btn btn-primary" id="searchBtn" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         搜尋航班
       </button>
     </div>
@@ -184,13 +235,13 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
       <h2>選擇座位</h2>
       <p class="meta" id="seatMeta"></p>
       <div class="seat-legend">
-        <span><i class="sw" style="background:var(--bg);border:1px solid var(--line);"></i>可選</span>
-        <span><i class="sw" style="background:var(--accent);"></i>已選</span>
-        <span><i class="sw" style="background:var(--bg-secondary);"></i>已售出</span>
+        <span><i class="sw" style="background:rgba(255,255,255,0.05);border:1px solid var(--line);"></i>可選</span>
+        <span><i class="sw" style="background:linear-gradient(135deg,var(--a1),var(--a2));"></i>已選</span>
+        <span><i class="sw" style="background:rgba(255,255,255,0.02);"></i>已售出</span>
       </div>
       <div class="seat-grid" id="seatGrid"></div>
       <p class="error" id="seatError" style="display:none;margin-top:10px;"></p>
-      <div class="btn-row" style="margin-top:20px;">
+      <div class="btn-row" style="margin-top:22px;">
         <button class="btn btn-secondary btn-icon" id="backTo2" type="button" aria-label="上一步">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>
         </button>
@@ -227,7 +278,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
     </div>
 
   </div>
-  <footer class="note">航班與座位資料存在真實資料庫，訂購會實際鎖定座位</footer>
+  <footer class="note">搜尋為 Duffel 真實航班資料（sandbox），選位與訂購存於真實資料庫</footer>
 </div>
 
 <script>
@@ -263,7 +314,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
 
     const btn = $('searchBtn'); btn.disabled = true;
     try{
-      const res = await fetch('/api/flights?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)+'&pax='+state.pax);
+      const res = await fetch('/api/flights?from='+encodeURIComponent(from)+'&to='+encodeURIComponent(to)+'&pax='+state.pax+'&date='+encodeURIComponent(state.date));
       const flights = await res.json();
       if(!res.ok) throw new Error(flights.error || 'search failed');
 
@@ -295,7 +346,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
     $('seatMeta').textContent = f.airline+' '+f.flightNo+'　'+state.date+'　'+f.dep+' – '+f.arr;
     const grid=$('seatGrid');
     grid.style.display='block';
-    grid.innerHTML='<p class="meta" style="margin:0;">座位讀取中…</p>';
+    grid.innerHTML='<div class="ai-loading"><div class="ai-loading-bar"></div><p>正在鎖定即時座位圖…</p></div>';
     $('seatError').style.display='none';
     goStep(3);
     try{
@@ -372,7 +423,7 @@ footer.note{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20
   });
 
   $('restartBtn').addEventListener('click', function(){
-    state.flight=null; state.seatId=null; state.seatLabel=null;
+    state.flight=null; state.flightId=null; state.seatId=null; state.seatLabel=null;
     $('nameInp').value=''; $('emailInp').value=''; $('phoneInp').value='';
     goStep(1);
   });
