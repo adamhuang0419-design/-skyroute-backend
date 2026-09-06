@@ -50,7 +50,6 @@ header.top .dot{width:6px;height:6px;border-radius:50%;background:linear-gradien
   padding:34px 26px 28px;
   border:1px solid var(--panel-border);
   box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
-  overflow:hidden;
 }
 .track{display:flex;gap:5px;margin-bottom:30px;}
 .track i{flex:1;height:3px;border-radius:2px;background:var(--line);font-style:normal;}
@@ -83,6 +82,40 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2396969e' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 12px center;background-size:15px;
 }
+.csel{position:relative;}
+.csel-trigger{
+  width:100%;height:48px;border-radius:14px;border:1px solid var(--line);
+  background:rgba(255,255,255,0.03);padding:0 14px 0 41px;font-size:16px;color:var(--ink);
+  font-family:inherit;display:flex;align-items:center;position:relative;cursor:pointer;
+  transition:all .25s cubic-bezier(.16,1,.3,1);text-align:left;
+}
+.csel-trigger:focus{outline:none;}
+.csel.open .csel-trigger{
+  border-color:var(--glass-border);background:var(--glass-bg);
+  backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:0 12px 34px rgba(0,0,0,0.4), 0 0 0 4px rgba(124,124,240,0.14);
+}
+.csel-trigger svg.csel-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-soft);}
+.csel-trigger .csel-value{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.csel-trigger svg.csel-chevron{width:15px;height:15px;color:var(--ink-soft);transition:transform .25s ease;flex:none;}
+.csel.open .csel-trigger svg.csel-chevron{transform:rotate(180deg);}
+.csel-menu{
+  position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:60;
+  background:#0d0d10;backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);
+  border:1px solid var(--glass-border);border-radius:16px;padding:6px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.5);
+  max-height:230px;overflow-y:auto;
+  display:none;
+}
+.csel.open .csel-menu{display:block;animation:menuIn .18s cubic-bezier(.16,1,.3,1);}
+@keyframes menuIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.csel-opt{
+  padding:11px 13px;font-size:15px;color:var(--ink);border-radius:10px;cursor:pointer;
+  transition:background .15s ease;font-family:inherit;
+}
+.csel-opt:hover{background:rgba(255,255,255,0.07);}
+.csel-opt.sel{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;font-weight:700;}
+.csel-native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .btn{
   width:100%;height:50px;border-radius:16px;border:none;
@@ -183,18 +216,42 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
       <h2>去哪裡？</h2>
       <div class="field">
         <label for="fromSel">出發地</label>
-        <div class="ico-input">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
-          <select id="fromSel">
+        <div class="csel" id="fromCsel">
+          <button type="button" class="csel-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <svg class="csel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
+            <span class="csel-value">台北</span>
+            <svg class="csel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="csel-menu" role="listbox">
+            <div class="csel-opt sel" data-value="台北" role="option">台北</div>
+            <div class="csel-opt" data-value="東京" role="option">東京</div>
+            <div class="csel-opt" data-value="首爾" role="option">首爾</div>
+            <div class="csel-opt" data-value="香港" role="option">香港</div>
+            <div class="csel-opt" data-value="曼谷" role="option">曼谷</div>
+            <div class="csel-opt" data-value="新加坡" role="option">新加坡</div>
+          </div>
+          <select id="fromSel" class="csel-native" tabindex="-1" aria-hidden="true">
             <option>台北</option><option>東京</option><option>首爾</option><option>香港</option><option>曼谷</option><option>新加坡</option>
           </select>
         </div>
       </div>
       <div class="field">
         <label for="toSel">目的地</label>
-        <div class="ico-input">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
-          <select id="toSel">
+        <div class="csel" id="toCsel">
+          <button type="button" class="csel-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <svg class="csel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
+            <span class="csel-value">東京</span>
+            <svg class="csel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="csel-menu" role="listbox">
+            <div class="csel-opt" data-value="台北" role="option">台北</div>
+            <div class="csel-opt sel" data-value="東京" role="option">東京</div>
+            <div class="csel-opt" data-value="首爾" role="option">首爾</div>
+            <div class="csel-opt" data-value="香港" role="option">香港</div>
+            <div class="csel-opt" data-value="曼谷" role="option">曼谷</div>
+            <div class="csel-opt" data-value="新加坡" role="option">新加坡</div>
+          </div>
+          <select id="toSel" class="csel-native" tabindex="-1" aria-hidden="true">
             <option>東京</option><option>台北</option><option>首爾</option><option>香港</option><option>曼谷</option><option>新加坡</option>
           </select>
         </div>
@@ -209,9 +266,19 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
         </div>
         <div class="field">
           <label for="paxSel">乘客</label>
-          <div class="ico-input">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>
-            <select id="paxSel">
+          <div class="csel" id="paxCsel">
+            <button type="button" class="csel-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <svg class="csel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>
+              <span class="csel-value">1 位</span>
+              <svg class="csel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="csel-menu" role="listbox">
+              <div class="csel-opt sel" data-value="1" role="option">1 位</div>
+              <div class="csel-opt" data-value="2" role="option">2 位</div>
+              <div class="csel-opt" data-value="3" role="option">3 位</div>
+              <div class="csel-opt" data-value="4" role="option">4 位</div>
+            </div>
+            <select id="paxSel" class="csel-native" tabindex="-1" aria-hidden="true">
               <option value="1">1 位</option><option value="2">2 位</option><option value="3">3 位</option><option value="4">4 位</option>
             </select>
           </div>
@@ -295,6 +362,40 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     const prefix = symbols[cur] || (cur + ' ');
     return prefix + Math.round(n).toLocaleString('en-US');
   }
+
+  function buildCustomSelect(wrapId){
+    const wrap = $(wrapId);
+    const trigger = wrap.querySelector('.csel-trigger');
+    const valueEl = wrap.querySelector('.csel-value');
+    const menu = wrap.querySelector('.csel-menu');
+    const native = wrap.querySelector('.csel-native');
+    const opts = Array.from(menu.querySelectorAll('.csel-opt'));
+
+    function close(){ wrap.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+    function openMenu(){
+      document.querySelectorAll('.csel.open').forEach(function(w){ if(w!==wrap) w.classList.remove('open'); });
+      wrap.classList.add('open'); trigger.setAttribute('aria-expanded','true');
+    }
+    trigger.addEventListener('click', function(e){
+      e.stopPropagation();
+      wrap.classList.contains('open') ? close() : openMenu();
+    });
+    opts.forEach(function(opt){
+      opt.addEventListener('click', function(){
+        opts.forEach(function(o){ o.classList.remove('sel'); });
+        opt.classList.add('sel');
+        valueEl.textContent = opt.textContent;
+        native.value = opt.getAttribute('data-value');
+        close();
+        native.dispatchEvent(new Event('change'));
+      });
+    });
+    document.addEventListener('click', function(e){ if(!wrap.contains(e.target)) close(); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
+  }
+  buildCustomSelect('fromCsel');
+  buildCustomSelect('toCsel');
+  buildCustomSelect('paxCsel');
 
   function goStep(n){
     for(let i=1;i<=5;i++){ $('step'+i).classList.toggle('active', i===n); }
