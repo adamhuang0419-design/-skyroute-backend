@@ -22,8 +22,10 @@
   --danger:#ff5b52;
 }
 *{box-sizing:border-box;}
+html{width:100%;}
 body{
   margin:0;
+  width:100%;
   min-height:100vh;
   display:flex;
   justify-content:center;
@@ -32,14 +34,14 @@ body{
     radial-gradient(720px 520px at 12% -8%, rgba(124,124,240,0.16), transparent 60%),
     radial-gradient(640px 480px at 100% 18%, rgba(227,107,201,0.11), transparent 60%),
     radial-gradient(560px 420px at 30% 100%, rgba(90,200,250,0.08), transparent 60%);
-  padding:52px 18px;
+  padding:clamp(24px,5vw,64px) clamp(16px,4vw,32px);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
   color:var(--ink);
   -webkit-font-smoothing:antialiased;
 }
-.shell{width:100%;max-width:430px;perspective:1400px;}
-header.top{margin-bottom:26px;padding:0 6px;display:flex;align-items:baseline;gap:10px;}
-header.top .mark{font-size:15px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;}
+.shell{width:100%;max-width:clamp(320px, 90vw, 760px);perspective:1400px;}
+header.top{margin-bottom:clamp(18px,3vw,28px);padding:0 6px;display:flex;align-items:baseline;gap:10px;}
+header.top .mark{font-size:clamp(15px,1.6vw,18px);font-weight:800;letter-spacing:0.06em;text-transform:uppercase;}
 header.top .dot{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));}
 .panel{
   position:relative;
@@ -47,15 +49,15 @@ header.top .dot{width:6px;height:6px;border-radius:50%;background:linear-gradien
   backdrop-filter:blur(28px) saturate(140%);
   -webkit-backdrop-filter:blur(28px) saturate(140%);
   border-radius:26px;
-  padding:34px 26px 28px;
+  padding:clamp(28px,4vw,56px) clamp(22px,4.5vw,56px) clamp(24px,4vw,48px);
   border:1px solid var(--panel-border);
   box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
 }
-.track{display:flex;gap:5px;margin-bottom:30px;}
+.track{display:flex;gap:5px;margin-bottom:clamp(24px,3vw,32px);}
 .track i{flex:1;height:3px;border-radius:2px;background:var(--line);font-style:normal;}
 .track i.done{background:var(--a1);}
 .track i.on{background:linear-gradient(90deg,var(--a1),var(--a2));}
-h2{font-size:33px;font-weight:800;letter-spacing:-0.035em;line-height:1.08;margin:0 0 24px;}
+h2{font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-0.035em;line-height:1.08;margin:0 0 24px;}
 .field{margin-bottom:16px;position:relative;}
 .field label{display:block;font-size:12px;font-weight:600;letter-spacing:0.02em;color:var(--ink-soft);margin-bottom:7px;}
 .ico-input{position:relative;}
@@ -93,12 +95,10 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .error{font-size:13px;color:var(--danger);margin:-6px 0 14px;}
 .meta{font-size:14px;color:var(--ink-soft);margin:-16px 0 20px;}
 
-/* segmented trip-type control */
 .seg{display:flex;background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:18px;}
 .seg-btn{flex:1;height:38px;border:none;background:transparent;color:var(--ink-soft);font-family:inherit;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .2s ease;}
 .seg-btn.active{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;}
 
-/* autocomplete */
 .acomp-menu{
   position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:70;
   background:#0d0d10;backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);
@@ -112,7 +112,6 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .acomp-opt .a-name{font-size:12px;color:var(--ink-soft);margin-top:2px;}
 .acomp-empty{padding:14px;font-size:13px;color:var(--ink-soft);text-align:center;}
 
-/* generic custom select (cabin class) */
 .csel{position:relative;}
 .csel-trigger{
   width:100%;height:48px;border-radius:14px;border:1px solid var(--line);
@@ -143,7 +142,6 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .csel-opt.sel{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;font-weight:700;}
 .csel-native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 
-/* passenger stepper popover */
 .pax-menu{padding:14px;}
 .pax-row{display:flex;align-items:center;justify-content:space-between;padding:9px 2px;}
 .pax-label{font-size:14px;font-weight:700;}
@@ -155,7 +153,6 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .step-val{min-width:18px;text-align:center;font-size:15px;font-weight:700;}
 .pax-done{margin-top:10px;height:42px;font-size:14px;}
 
-/* direct-only toggle */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 18px;font-size:14px;font-weight:600;cursor:pointer;}
 .switch{position:relative;width:44px;height:26px;flex:none;}
 .switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1;}
@@ -178,14 +175,6 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .flight-row .fl-r{text-align:right;}
 .flight-row .price{font-size:17px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--a3),var(--a1));-webkit-background-clip:text;background-clip:text;color:transparent;}
 .flight-row .tag{font-size:11px;color:var(--ink-faint);margin-top:4px;}
-.seat-legend{display:flex;gap:16px;font-size:12px;color:var(--ink-soft);margin:0 0 18px;}
-.seat-legend span{display:inline-flex;align-items:center;gap:6px;}
-.sw{width:9px;height:9px;border-radius:3px;display:inline-block;}
-.seat-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-bottom:8px;}
-.seat{aspect-ratio:1;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,0.03);font-size:11px;color:var(--ink-soft);font-family:inherit;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s cubic-bezier(.16,1,.3,1);}
-.seat:hover:not(.taken):not(.sel){border-color:var(--a3);}
-.seat.taken{background:rgba(255,255,255,0.015);color:#333338;border-color:transparent;cursor:not-allowed;}
-.seat.sel{background:linear-gradient(135deg,var(--a1),var(--a2));border-color:transparent;color:#fff;transform:scale(1.08);box-shadow:0 8px 20px rgba(124,124,240,0.45);}
 .summary-card{background:var(--glass-bg);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);border:1px solid var(--glass-border);border-radius:18px;padding:20px 20px 6px;margin-bottom:20px;}
 .sum-row{display:flex;justify-content:space-between;font-size:14px;padding-bottom:13px;}
 .sum-row .k{color:var(--ink-soft);}
@@ -205,24 +194,14 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 @keyframes stepIn{from{opacity:0;transform:translateY(26px) translateZ(-50px) rotateX(6deg);}to{opacity:1;transform:translateY(0) translateZ(0) rotateX(0);}}
 footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:22px;letter-spacing:0.01em;}
 @media (prefers-reduced-motion:reduce){.step.active{animation:none;}.ai-loading-bar::after{animation:none;}.ai-loading p{animation:none;}}
-
-@media (min-width:640px){
-  .shell{max-width:580px;}
-  .panel{padding:46px 42px 40px;}
-  h2{font-size:38px;}
-  .row2{grid-template-columns:1fr 1fr 1fr;}
-}
-@media (min-width:1024px){
-  .shell{max-width:720px;}
-  .panel{padding:54px 56px 48px;}
-}
+@media (min-width:768px){ .row2{grid-template-columns:1fr 1fr 1fr;} }
 </style>
 </head>
 <body>
 <div class="shell">
   <header class="top"><span class="dot"></span><span class="mark">Skyroute</span></header>
   <div class="panel">
-    <div class="track"><i id="t1"></i><i id="t2"></i><i id="t3"></i><i id="t4"></i><i id="t5"></i></div>
+    <div class="track"><i id="t1"></i><i id="t2"></i><i id="t3"></i><i id="t4"></i></div>
 
     <div class="step" id="step1">
       <h2>去哪裡？</h2>
@@ -236,20 +215,18 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
         <label for="fromInp">出發地</label>
         <div class="ico-input">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
-          <input type="text" id="fromInp" placeholder="城市或機場" autocomplete="off" value="台北 TPE">
+          <input type="text" id="fromInp" placeholder="打中文或英文城市名" autocomplete="off" value="台北 TPE">
         </div>
         <div class="acomp-menu" id="fromMenu"></div>
-        <input type="hidden" id="fromCode" value="TPE">
       </div>
 
       <div class="field">
         <label for="toInp">目的地</label>
         <div class="ico-input">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
-          <input type="text" id="toInp" placeholder="城市或機場" autocomplete="off" value="東京 TYO">
+          <input type="text" id="toInp" placeholder="打中文或英文城市名" autocomplete="off" value="東京 TYO">
         </div>
         <div class="acomp-menu" id="toMenu"></div>
-        <input type="hidden" id="toCode" value="TYO">
       </div>
 
       <div class="row2">
@@ -282,9 +259,6 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
               <div class="csel-opt" data-value="business" role="option">商務艙</div>
               <div class="csel-opt" data-value="first" role="option">頭等艙</div>
             </div>
-            <select id="cabinSel" class="csel-native" tabindex="-1" aria-hidden="true">
-              <option value="any">不限艙等</option><option value="economy">經濟艙</option><option value="premium_economy">豪華經濟艙</option><option value="business">商務艙</option><option value="first">頭等艙</option>
-            </select>
           </div>
         </div>
       </div>
@@ -347,38 +321,21 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     </div>
 
     <div class="step" id="step3">
-      <h2>選擇座位</h2>
-      <p class="meta" id="seatMeta"></p>
-      <div class="seat-legend">
-        <span><i class="sw" style="background:rgba(255,255,255,0.05);border:1px solid var(--line);"></i>可選</span>
-        <span><i class="sw" style="background:linear-gradient(135deg,var(--a1),var(--a2));"></i>已選</span>
-        <span><i class="sw" style="background:rgba(255,255,255,0.02);"></i>已售出</span>
-      </div>
-      <div class="seat-grid" id="seatGrid"></div>
-      <p class="error" id="seatError" style="display:none;margin-top:10px;"></p>
-      <div class="btn-row" style="margin-top:22px;">
-        <button class="btn btn-secondary btn-icon" id="backTo2" type="button" aria-label="上一步">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>
-        </button>
-        <button class="btn btn-primary" id="toStep4" type="button">繼續</button>
-      </div>
-    </div>
-
-    <div class="step" id="step4">
       <h2>旅客資料</h2>
+      <p class="meta" id="passMeta"></p>
       <div class="field"><label for="nameInp">姓名</label><input type="text" id="nameInp" placeholder="王小明"></div>
       <div class="field"><label for="emailInp">Email</label><input type="email" id="emailInp" placeholder="name@example.com"></div>
       <div class="field"><label for="phoneInp">電話</label><input type="tel" id="phoneInp" placeholder="0912-345-678"></div>
       <p class="error" id="passError" style="display:none;"></p>
       <div class="btn-row">
-        <button class="btn btn-secondary btn-icon" id="backTo3" type="button" aria-label="上一步">
+        <button class="btn btn-secondary btn-icon" id="backTo2" type="button" aria-label="上一步">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="11 6 5 12 11 18"/></svg>
         </button>
         <button class="btn btn-primary" id="toConfirm" type="button">確認訂購</button>
       </div>
     </div>
 
-    <div class="step" id="step5">
+    <div class="step" id="step4">
       <div class="success-mark">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
@@ -393,7 +350,7 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     </div>
 
   </div>
-  <footer class="note">搜尋為 Duffel 真實航班資料（sandbox），選位與訂購存於真實資料庫</footer>
+  <footer class="note">搜尋為 Duffel 真實航班資料（sandbox），訂購存於真實資料庫</footer>
 </div>
 
 <script>
@@ -402,7 +359,7 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     tripType:'oneway', fromCode:'TPE', toCode:'TYO', fromLabel:'台北 TPE', toLabel:'東京 TYO',
     date:'', returnDate:'', cabin:'any', directOnly:false,
     adults:1, children:0, infants:0,
-    flight:null, currency:'TWD', flightId:null, seatId:null, seatLabel:null
+    flight:null, currency:'TWD', flightId:null
   };
   const $ = id => document.getElementById(id);
 
@@ -418,7 +375,6 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     return prefix + Math.round(n).toLocaleString('en-US');
   }
 
-  // ---- trip type segmented control ----
   document.querySelectorAll('#tripSeg .seg-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       document.querySelectorAll('#tripSeg .seg-btn').forEach(function(b){ b.classList.remove('active'); });
@@ -428,7 +384,6 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     });
   });
 
-  // ---- generic custom select (cabin class) ----
   function buildCustomSelect(wrapId, onPick){
     const wrap = $(wrapId);
     const trigger = wrap.querySelector('.csel-trigger');
@@ -455,7 +410,6 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
   }
   buildCustomSelect('cabinCsel', function(val){ state.cabin = val; });
 
-  // ---- passenger stepper popover ----
   const paxWrap = $('paxCsel');
   const paxTrigger = $('paxTrigger');
   function paxClose(){ paxWrap.classList.remove('open'); paxTrigger.setAttribute('aria-expanded','false'); }
@@ -472,20 +426,17 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     ['adults','children','infants'].forEach(function(f){
       $(f+'Val').textContent = state[f];
       const lim = PAX_LIMITS[f];
-      wrapStepBtns(f, lim);
+      document.querySelectorAll('.step-btn[data-field="'+f+'"]').forEach(function(btn){
+        const delta = parseInt(btn.getAttribute('data-delta'),10);
+        const next = state[f] + delta;
+        btn.disabled = next < lim[0] || next > lim[1];
+      });
     });
     const parts = [];
     if(state.adults>0) parts.push(state.adults+' 大人');
     if(state.children>0) parts.push(state.children+' 小孩');
     if(state.infants>0) parts.push(state.infants+' 嬰兒');
     $('paxSummary').textContent = parts.length ? parts.join('、') : '請選擇人數';
-  }
-  function wrapStepBtns(field, lim){
-    document.querySelectorAll('.step-btn[data-field="'+field+'"]').forEach(function(btn){
-      const delta = parseInt(btn.getAttribute('data-delta'),10);
-      const next = state[field] + delta;
-      btn.disabled = next < lim[0] || next > lim[1];
-    });
   }
   document.querySelectorAll('.step-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
@@ -500,35 +451,32 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
   });
   updatePaxUI();
 
-  // ---- direct-only toggle ----
   $('directOnly').addEventListener('change', function(){ state.directOnly = $('directOnly').checked; });
 
-  // ---- place autocomplete ----
-  function buildAutocomplete(inputId, menuId, hiddenField, onPick){
+  function buildAutocomplete(inputId, menuId, codeField, labelField){
     const input = $(inputId), menu = $(menuId);
-    let timer = null, current = [];
-    input.addEventListener('focus', function(){ if(current.length) menu.classList.add('open'); });
+    let timer = null;
     input.addEventListener('input', function(){
       const q = input.value.trim();
       clearTimeout(timer);
-      if(q.length < 2){ menu.classList.remove('open'); return; }
+      if(q.length < 1){ menu.classList.remove('open'); return; }
       timer = setTimeout(async function(){
         try{
           const res = await fetch('/api/places?query='+encodeURIComponent(q));
           const items = await res.json();
-          current = items || [];
           menu.innerHTML = '';
-          if(!current.length){
-            menu.innerHTML = '<div class="acomp-empty">找不到符合的地點</div>';
+          if(!items.length){
+            menu.innerHTML = '<div class="acomp-empty">找不到符合的地點，換個關鍵字試試</div>';
           } else {
-            current.forEach(function(p){
+            items.forEach(function(p){
               const row = document.createElement('div');
               row.className = 'acomp-opt';
               row.innerHTML = '<div class="a-city">'+p.cityName+' '+p.iataCode+'</div><div class="a-name">'+p.name+'</div>';
               row.addEventListener('click', function(){
-                input.value = p.cityName+' '+p.iataCode;
-                state[hiddenField] = p.iataCode;
-                if(onPick) onPick(p);
+                const label = p.cityName+' '+p.iataCode;
+                input.value = label;
+                state[codeField] = p.iataCode;
+                state[labelField] = label;
                 menu.classList.remove('open');
               });
               menu.appendChild(row);
@@ -540,26 +488,26 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     });
     document.addEventListener('click', function(e){ if(!input.contains(e.target) && !menu.contains(e.target)) menu.classList.remove('open'); });
   }
-  buildAutocomplete('fromInp','fromMenu','fromCode');
-  buildAutocomplete('toInp','toMenu','toCode');
+  buildAutocomplete('fromInp','fromMenu','fromCode','fromLabel');
+  buildAutocomplete('toInp','toMenu','toCode','toLabel');
 
   function goStep(n){
-    for(let i=1;i<=5;i++){ $('step'+i).classList.toggle('active', i===n); }
-    for(let i=1;i<=5;i++){
+    for(let i=1;i<=4;i++){ $('step'+i).classList.toggle('active', i===n); }
+    for(let i=1;i<=4;i++){
       $('t'+i).classList.toggle('on', i===n);
       $('t'+i).classList.toggle('done', i<n);
     }
   }
 
   $('searchBtn').addEventListener('click', async function(){
+    if($('fromInp').value.trim() !== state.fromLabel){ $('searchError').textContent='請從建議清單選擇出發地'; $('searchError').style.display=''; return; }
+    if($('toInp').value.trim() !== state.toLabel){ $('searchError').textContent='請從建議清單選擇目的地'; $('searchError').style.display=''; return; }
     if(state.fromCode === state.toCode){ $('searchError').textContent='出發地與目的地不能相同'; $('searchError').style.display=''; return; }
     if(state.adults + state.children + state.infants < 1){ $('searchError').textContent='請至少選擇 1 位乘客'; $('searchError').style.display=''; return; }
     $('searchError').style.display='none';
 
     state.date = $('dateInp').value;
     state.returnDate = $('returnDateInp').value;
-    state.fromLabel = $('fromInp').value;
-    state.toLabel = $('toInp').value;
 
     const btn = $('searchBtn'); btn.disabled = true;
     try{
@@ -599,15 +547,12 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
   $('backTo1').addEventListener('click', function(){ goStep(1); });
 
   async function pickFlight(f){
-    state.flight = f; state.seatId=null; state.seatLabel=null; state.flightId=null;
-    $('seatMeta').textContent = f.airline+' '+f.flightNo+'　'+state.date+'　'+f.dep+' – '+f.arr;
-    const grid=$('seatGrid');
-    grid.style.display='block';
-    grid.innerHTML='<div class="ai-loading"><div class="ai-loading-bar"></div><p>正在鎖定即時座位圖…</p></div>';
-    $('seatError').style.display='none';
+    state.flight = f; state.flightId = null;
+    const paxTotal = state.adults+state.children+state.infants;
+    $('passMeta').textContent = f.airline+' '+f.flightNo+'　'+state.fromLabel+' → '+state.toLabel+'　'+state.date;
     goStep(3);
+    $('toConfirm').disabled = true;
     try{
-      const paxTotal = state.adults+state.children+state.infants;
       const selRes = await fetch('/api/select-offer', {
         method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ source:f.source, localFlightId:f.localFlightId, airline:f.airline, flightNo:f.flightNo, dep:f.dep, arr:f.arr, duration:f.duration, stops:f.stops, totalPrice:f.totalPrice, currency:f.currency, from:state.fromLabel, to:state.toLabel, pax:paxTotal })
@@ -615,41 +560,22 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
       const sel = await selRes.json();
       if(!selRes.ok) throw new Error(sel.error || 'select failed');
       state.flightId = sel.flightId; state.currency = sel.currency || f.currency || 'TWD';
-
-      const res = await fetch('/api/flights/'+state.flightId+'/seats');
-      const seats = await res.json();
-      if(!res.ok) throw new Error(seats.error || 'seats failed');
-      grid.style.display='grid';
-      grid.innerHTML='';
-      seats.forEach(function(s){
-        const b=document.createElement('button');
-        b.type='button'; b.className='seat'+(s.taken?' taken':''); b.textContent=s.seatNumber;
-        if(!s.taken){ b.addEventListener('click', function(){ selectSeat(s.id, s.seatNumber, b); }); }
-        grid.appendChild(b);
-      });
     }catch(e){
-      grid.style.display='block';
-      grid.innerHTML='<p class="error" style="margin:0;">座位讀取失敗，請返回重試</p>';
+      $('passError').textContent='航班資料處理失敗，請返回重新選擇';
+      $('passError').style.display='';
+    }finally{
+      $('toConfirm').disabled = false;
     }
   }
 
-  function selectSeat(seatId, seatLabel, el){
-    document.querySelectorAll('.seat.sel').forEach(function(s){ s.classList.remove('sel'); });
-    el.classList.add('sel'); state.seatId=seatId; state.seatLabel=seatLabel; $('seatError').style.display='none';
-  }
-
   $('backTo2').addEventListener('click', function(){ goStep(2); });
-  $('toStep4').addEventListener('click', function(){
-    if(!state.seatId){ $('seatError').textContent='請先選擇一個座位'; $('seatError').style.display=''; return; }
-    goStep(4);
-  });
-  $('backTo3').addEventListener('click', function(){ goStep(3); });
 
   ['nameInp','emailInp','phoneInp'].forEach(function(id){ $(id).addEventListener('input', function(){ $('passError').style.display='none'; }); });
 
   function sumRow(k,v){ return '<div class="sum-row"><span class="k">'+k+'</span><span>'+v+'</span></div>'; }
 
   $('toConfirm').addEventListener('click', async function(){
+    if(!state.flightId){ $('passError').textContent='航班資料尚未就緒，請返回重新選擇'; $('passError').style.display=''; return; }
     const name=$('nameInp').value.trim(), email=$('emailInp').value.trim(), phone=$('phoneInp').value.trim();
     if(!name||!email||!phone||email.indexOf('@')===-1){ $('passError').textContent='請完整填寫姓名、Email 與電話'; $('passError').style.display=''; return; }
     $('passError').style.display='none';
@@ -659,7 +585,7 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     try{
       const res = await fetch('/api/bookings', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ flightId: state.flightId, seatId: state.seatId, name, email, phone, pax: paxTotal, from: state.fromLabel, to: state.toLabel, date: state.date })
+        body: JSON.stringify({ flightId: state.flightId, name, email, phone, pax: paxTotal, date: state.date })
       });
       const data = await res.json();
       if(!res.ok){ $('passError').textContent = data.error || '訂購失敗，請稍後再試'; $('passError').style.display=''; return; }
@@ -669,10 +595,9 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
         sumRow('航班', state.flight.airline+' '+state.flight.flightNo)+
         sumRow('航線', state.fromLabel+' → '+state.toLabel)+
         sumRow('日期時間', state.date+'　'+state.flight.dep+' – '+state.flight.arr)+
-        sumRow('座位', state.seatLabel)+
         sumRow('乘客', name+'　x '+paxTotal)+
         '<div class="sum-total"><span>總金額</span><span>'+fmtMoney(data.totalPrice, state.currency)+'</span></div>';
-      goStep(5);
+      goStep(4);
     }catch(e){
       $('passError').textContent='連線失敗，請稍後再試';
       $('passError').style.display='';
@@ -682,7 +607,7 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
   });
 
   $('restartBtn').addEventListener('click', function(){
-    state.flight=null; state.flightId=null; state.seatId=null; state.seatLabel=null;
+    state.flight=null; state.flightId=null;
     $('nameInp').value=''; $('emailInp').value=''; $('phoneInp').value='';
     goStep(1);
   });
