@@ -3,10 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark" id="colorSchemeMeta">
 <title>Skyroute</title>
+<script>
+(function(){
+  var t; try{ t = localStorage.getItem('skyroute-theme'); }catch(e){}
+  document.documentElement.setAttribute('data-theme', t==='light' ? 'light' : 'dark');
+})();
+</script>
 <style>
-:root{
+:root, [data-theme="dark"]{
   --bg:#050507;
   --panel:rgba(255,255,255,0.035);
   --panel-border:rgba(255,255,255,0.08);
@@ -16,42 +22,64 @@
   --ink-soft:#96969e;
   --ink-faint:#5c5c63;
   --line:rgba(255,255,255,0.08);
-  --a1:#7c7cf0;
-  --a2:#e36bc9;
-  --a3:#5ac8fa;
-  --danger:#ff5b52;
+  --menu-bg:#0d0d10;
+  --tint-1:rgba(255,255,255,0.03);
+  --tint-2:rgba(255,255,255,0.045);
+  --tint-3:rgba(255,255,255,0.07);
+  --switch-off:rgba(255,255,255,0.12);
+  --overlay-scrim:rgba(0,0,0,0.6);
+  --a1:#7c7cf0; --a2:#e36bc9; --a3:#5ac8fa; --danger:#ff5b52;
+  --glow1:rgba(124,124,240,0.16); --glow2:rgba(227,107,201,0.11); --glow3:rgba(90,200,250,0.08);
+}
+[data-theme="light"]{
+  --bg:#f2f2f5;
+  --panel:rgba(255,255,255,0.72);
+  --panel-border:rgba(0,0,0,0.06);
+  --glass-bg:rgba(255,255,255,0.55);
+  --glass-border:rgba(0,0,0,0.12);
+  --ink:#17171a;
+  --ink-soft:#68686f;
+  --ink-faint:#9a9aa1;
+  --line:rgba(0,0,0,0.08);
+  --menu-bg:#ffffff;
+  --tint-1:rgba(0,0,0,0.025);
+  --tint-2:rgba(0,0,0,0.035);
+  --tint-3:rgba(0,0,0,0.055);
+  --switch-off:rgba(0,0,0,0.13);
+  --overlay-scrim:rgba(0,0,0,0.28);
+  --a1:#5b4fd6; --a2:#c2338f; --a3:#0a84c4; --danger:#d92d24;
+  --glow1:rgba(91,79,214,0.10); --glow2:rgba(194,51,143,0.08); --glow3:rgba(10,132,196,0.07);
 }
 *{box-sizing:border-box;}
 html{width:100%;}
 body{
-  margin:0;
-  width:100%;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
+  margin:0;width:100%;min-height:100vh;display:flex;justify-content:center;
   background:var(--bg);
   background-image:
-    radial-gradient(720px 520px at 12% -8%, rgba(124,124,240,0.16), transparent 60%),
-    radial-gradient(640px 480px at 100% 18%, rgba(227,107,201,0.11), transparent 60%),
-    radial-gradient(560px 420px at 30% 100%, rgba(90,200,250,0.08), transparent 60%);
+    radial-gradient(720px 520px at 12% -8%, var(--glow1), transparent 60%),
+    radial-gradient(640px 480px at 100% 18%, var(--glow2), transparent 60%),
+    radial-gradient(560px 420px at 30% 100%, var(--glow3), transparent 60%);
   padding:clamp(24px,5vw,64px) clamp(16px,4vw,32px);
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
-  color:var(--ink);
-  -webkit-font-smoothing:antialiased;
+  color:var(--ink);-webkit-font-smoothing:antialiased;
+  transition:background-color .3s ease,color .3s ease;
 }
 .shell{width:100%;max-width:clamp(320px, 90vw, 760px);perspective:1400px;}
-header.top{margin-bottom:clamp(18px,3vw,28px);padding:0 6px;display:flex;align-items:baseline;gap:10px;}
-header.top .mark{font-size:clamp(15px,1.6vw,18px);font-weight:800;letter-spacing:0.06em;text-transform:uppercase;}
+header.top{margin-bottom:clamp(18px,3vw,28px);padding:0 6px;display:flex;align-items:center;gap:10px;}
+header.top .mark{flex:1;font-size:clamp(15px,1.6vw,18px);font-weight:800;letter-spacing:0.06em;text-transform:uppercase;}
 header.top .dot{width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));}
+.icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--tint-2);color:var(--ink);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;flex:none;}
+.icon-btn:hover{border-color:var(--glass-border);}
+.icon-btn svg{width:17px;height:17px;}
+.icon-moon{display:none;}
+[data-theme="light"] .icon-sun{display:none;}
+[data-theme="light"] .icon-moon{display:block;}
 .panel{
-  position:relative;
-  background:var(--panel);
-  backdrop-filter:blur(28px) saturate(140%);
-  -webkit-backdrop-filter:blur(28px) saturate(140%);
-  border-radius:26px;
-  padding:clamp(28px,4vw,56px) clamp(22px,4.5vw,56px) clamp(24px,4vw,48px);
+  position:relative;background:var(--panel);
+  backdrop-filter:blur(28px) saturate(140%);-webkit-backdrop-filter:blur(28px) saturate(140%);
+  border-radius:26px;padding:clamp(28px,4vw,56px) clamp(22px,4.5vw,56px) clamp(24px,4vw,48px);
   border:1px solid var(--panel-border);
-  box-shadow:0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
+  box-shadow:0 30px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .track{display:flex;gap:5px;margin-bottom:clamp(24px,3vw,32px);}
 .track i{flex:1;height:3px;border-radius:2px;background:var(--line);font-style:normal;}
@@ -64,16 +92,15 @@ h2{font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-0.035em;line-h
 .ico-input svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-soft);pointer-events:none;z-index:1;}
 input,select{
   width:100%;height:48px;border-radius:14px;border:1px solid var(--line);
-  background:rgba(255,255,255,0.03);padding:0 14px;font-size:16px;color:var(--ink);
+  background:var(--tint-1);padding:0 14px;font-size:16px;color:var(--ink);
   font-family:inherit;appearance:none;-webkit-appearance:none;
   transition:all .25s cubic-bezier(.16,1,.3,1);position:relative;
 }
 .ico-input input,.ico-input select{padding-left:41px;}
 input:focus,select:focus{
-  outline:none;border-color:var(--glass-border);
-  background:var(--glass-bg);
+  outline:none;border-color:var(--glass-border);background:var(--glass-bg);
   backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
-  box-shadow:0 12px 34px rgba(0,0,0,0.4), 0 0 0 4px rgba(124,124,240,0.14);
+  box-shadow:0 12px 34px rgba(0,0,0,0.25), 0 0 0 4px rgba(124,124,240,0.14);
 }
 input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
@@ -86,8 +113,8 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .btn svg{width:18px;height:18px;flex:none;}
 .btn:active{transform:scale(0.965);}
 .btn-primary{background:linear-gradient(135deg,#fff,#e2e2e6);color:#0a0a0c;}
-.btn-primary:hover{box-shadow:0 10px 28px rgba(255,255,255,0.12);}
-.btn-secondary{background:rgba(255,255,255,0.05);color:var(--ink);border:1px solid var(--line);}
+.btn-primary:hover{box-shadow:0 10px 28px rgba(0,0,0,0.12);}
+.btn-secondary{background:var(--tint-2);color:var(--ink);border:1px solid var(--line);}
 .btn-secondary:hover{background:var(--glass-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:var(--glass-border);}
 .btn-icon{width:50px;flex:none;padding:0;}
 .btn-row{display:flex;gap:10px;}
@@ -95,19 +122,19 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .error{font-size:13px;color:var(--danger);margin:-6px 0 14px;}
 .meta{font-size:14px;color:var(--ink-soft);margin:-16px 0 20px;}
 
-.seg{display:flex;background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:18px;}
-.seg-btn{flex:1;height:38px;border:none;background:transparent;color:var(--ink-soft);font-family:inherit;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .2s ease;}
+.seg{display:flex;background:var(--tint-2);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:18px;}
+.seg-btn{flex:1;height:38px;border:none;background:transparent;color:var(--ink-soft);font-family:inherit;font-size:13px;font-weight:700;border-radius:10px;cursor:pointer;transition:all .2s ease;padding:0 4px;}
 .seg-btn.active{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;}
 
 .acomp-menu{
   position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:70;
-  background:#0d0d10;backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);
+  background:var(--menu-bg);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);
   border:1px solid var(--glass-border);border-radius:16px;padding:6px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.5);max-height:230px;overflow-y:auto;display:none;
+  box-shadow:0 20px 50px rgba(0,0,0,0.3);max-height:230px;overflow-y:auto;display:none;
 }
 .acomp-menu.open{display:block;animation:menuIn .18s cubic-bezier(.16,1,.3,1);}
 .acomp-opt{padding:11px 13px;border-radius:10px;cursor:pointer;transition:background .15s ease;}
-.acomp-opt:hover{background:rgba(255,255,255,0.07);}
+.acomp-opt:hover{background:var(--tint-3);}
 .acomp-opt .a-city{font-size:15px;font-weight:700;}
 .acomp-opt .a-name{font-size:12px;color:var(--ink-soft);margin-top:2px;}
 .acomp-empty{padding:14px;font-size:13px;color:var(--ink-soft);text-align:center;}
@@ -115,7 +142,7 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .csel{position:relative;}
 .csel-trigger{
   width:100%;height:48px;border-radius:14px;border:1px solid var(--line);
-  background:rgba(255,255,255,0.03);padding:0 14px 0 41px;font-size:16px;color:var(--ink);
+  background:var(--tint-1);padding:0 14px 0 41px;font-size:16px;color:var(--ink);
   font-family:inherit;display:flex;align-items:center;position:relative;cursor:pointer;
   transition:all .25s cubic-bezier(.16,1,.3,1);text-align:left;
 }
@@ -123,7 +150,7 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .csel.open .csel-trigger{
   border-color:var(--glass-border);background:var(--glass-bg);
   backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
-  box-shadow:0 12px 34px rgba(0,0,0,0.4), 0 0 0 4px rgba(124,124,240,0.14);
+  box-shadow:0 12px 34px rgba(0,0,0,0.25), 0 0 0 4px rgba(124,124,240,0.14);
 }
 .csel-trigger svg.csel-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--ink-soft);}
 .csel-trigger .csel-value{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -131,23 +158,22 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .csel.open .csel-trigger svg.csel-chevron{transform:rotate(180deg);}
 .csel-menu{
   position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:60;
-  background:#0d0d10;backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);
+  background:var(--menu-bg);backdrop-filter:blur(28px) saturate(150%);-webkit-backdrop-filter:blur(28px) saturate(150%);
   border:1px solid var(--glass-border);border-radius:16px;padding:6px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.5);max-height:280px;overflow-y:auto;display:none;
+  box-shadow:0 20px 50px rgba(0,0,0,0.3);max-height:280px;overflow-y:auto;display:none;
 }
 .csel.open .csel-menu{display:block;animation:menuIn .18s cubic-bezier(.16,1,.3,1);}
 @keyframes menuIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
 .csel-opt{padding:11px 13px;font-size:15px;color:var(--ink);border-radius:10px;cursor:pointer;transition:background .15s ease;font-family:inherit;}
-.csel-opt:hover{background:rgba(255,255,255,0.07);}
+.csel-opt:hover{background:var(--tint-3);}
 .csel-opt.sel{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;font-weight:700;}
-.csel-native{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 
 .pax-menu{padding:14px;}
 .pax-row{display:flex;align-items:center;justify-content:space-between;padding:9px 2px;}
 .pax-label{font-size:14px;font-weight:700;}
 .pax-sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
 .stepper{display:flex;align-items:center;gap:12px;}
-.step-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,0.04);color:var(--ink);font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;}
+.step-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--tint-2);color:var(--ink);font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;}
 .step-btn:disabled{opacity:.3;cursor:not-allowed;}
 .step-btn:not(:disabled):hover{border-color:var(--a3);}
 .step-val{min-width:18px;text-align:center;font-size:15px;font-weight:700;}
@@ -156,10 +182,18 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 18px;font-size:14px;font-weight:600;cursor:pointer;}
 .switch{position:relative;width:44px;height:26px;flex:none;}
 .switch input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1;}
-.switch-track{position:absolute;inset:0;background:rgba(255,255,255,0.12);border-radius:14px;transition:background .2s ease;}
-.switch-track::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s cubic-bezier(.16,1,.3,1);}
+.switch-track{position:absolute;inset:0;background:var(--switch-off);border-radius:14px;transition:background .2s ease;}
+.switch-track::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s cubic-bezier(.16,1,.3,1);box-shadow:0 1px 3px rgba(0,0,0,0.25);}
 .switch input:checked ~ .switch-track{background:linear-gradient(135deg,var(--a1),var(--a2));}
 .switch input:checked ~ .switch-track::after{transform:translateX(18px);}
+
+.seg-block{border-top:1px solid var(--line);padding-top:16px;margin-top:16px;}
+.seg-block:first-child{border-top:none;padding-top:0;margin-top:0;}
+.seg-num-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.seg-num{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.seg-remove{background:none;border:none;color:var(--danger);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.add-seg-btn{width:100%;height:46px;border-radius:14px;border:1px dashed var(--glass-border);background:transparent;color:var(--ink);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 18px;transition:all .2s ease;}
+.add-seg-btn:hover:not(:disabled){background:var(--glass-bg);backdrop-filter:blur(14px);}
 
 .flight-list{border-top:1px solid var(--line);margin-bottom:22px;}
 .flight-row{
@@ -168,10 +202,9 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
   border-radius:16px;cursor:pointer;background:transparent;border:1px solid transparent;
   transition:all .25s cubic-bezier(.16,1,.3,1);
 }
-.flight-row:hover{background:var(--glass-bg);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);border-color:var(--glass-border);transform:translateY(-1px);box-shadow:0 14px 32px rgba(0,0,0,0.35);}
+.flight-row:hover{background:var(--glass-bg);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);border-color:var(--glass-border);transform:translateY(-1px);box-shadow:0 14px 32px rgba(0,0,0,0.2);}
 .flight-row .airline{font-size:15px;font-weight:700;letter-spacing:-0.01em;}
 .flight-row .time{font-size:13px;color:var(--ink-soft);margin-top:4px;}
-.flight-row .time.ret{margin-top:2px;}
 .flight-row .fl-r{text-align:right;}
 .flight-row .price{font-size:17px;font-weight:800;letter-spacing:-0.02em;background:linear-gradient(135deg,var(--a3),var(--a1));-webkit-background-clip:text;background-clip:text;color:transparent;}
 .flight-row .tag{font-size:11px;color:var(--ink-faint);margin-top:4px;}
@@ -179,27 +212,41 @@ input:disabled,select:disabled,button:disabled{opacity:0.5;cursor:not-allowed;}
 .sum-row{display:flex;justify-content:space-between;font-size:14px;padding-bottom:13px;}
 .sum-row .k{color:var(--ink-soft);}
 .sum-total{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:15px 0;font-size:17px;font-weight:800;}
-.success-mark{width:60px;height:60px;border-radius:50%;margin:4px auto 20px;position:relative;background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3));display:flex;align-items:center;justify-content:center;box-shadow:0 12px 32px rgba(124,124,240,0.4);}
+.success-mark{width:60px;height:60px;border-radius:50%;margin:4px auto 20px;position:relative;background:linear-gradient(135deg,var(--a1),var(--a2),var(--a3));display:flex;align-items:center;justify-content:center;box-shadow:0 12px 32px rgba(124,124,240,0.35);}
 .success-mark svg{width:27px;height:27px;color:#fff;}
 .ref{text-align:center;font-size:12px;color:var(--ink-soft);margin-bottom:3px;letter-spacing:0.02em;}
 .ref-code{text-align:center;font-size:24px;font-weight:800;letter-spacing:0.05em;margin-bottom:28px;background:linear-gradient(135deg,var(--a3),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent;}
-.ai-loading{padding:30px 0;text-align:center;}
-.ai-loading-bar{height:3px;width:100%;border-radius:2px;overflow:hidden;position:relative;background:var(--line);margin-bottom:16px;}
-.ai-loading-bar::after{content:'';position:absolute;top:0;bottom:0;width:45%;background:linear-gradient(90deg,transparent,var(--a1),var(--a2),var(--a3),transparent);animation:shimmerSlide 1.3s ease-in-out infinite;}
-@keyframes shimmerSlide{0%{transform:translateX(-110%);}100%{transform:translateX(320%);}}
-.ai-loading p{font-size:13px;color:var(--ink-soft);margin:0;animation:breathe 1.8s ease-in-out infinite;}
-@keyframes breathe{0%,100%{opacity:.45;}50%{opacity:1;}}
 .step{display:none;}
 .step.active{display:block;animation:stepIn .55s cubic-bezier(.16,1,.3,1);transform-style:preserve-3d;}
 @keyframes stepIn{from{opacity:0;transform:translateY(26px) translateZ(-50px) rotateX(6deg);}to{opacity:1;transform:translateY(0) translateZ(0) rotateX(0);}}
 footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:22px;letter-spacing:0.01em;}
-@media (prefers-reduced-motion:reduce){.step.active{animation:none;}.ai-loading-bar::after{animation:none;}.ai-loading p{animation:none;}}
+@media (prefers-reduced-motion:reduce){.step.active{animation:none;}}
 @media (min-width:768px){ .row2{grid-template-columns:1fr 1fr 1fr;} }
+
+.overlay{position:fixed;inset:0;z-index:200;background:var(--overlay-scrim);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;}
+.overlay.open{display:flex;}
+.overlay-panel{width:100%;max-width:440px;max-height:85vh;overflow-y:auto;background:var(--menu-bg);backdrop-filter:blur(30px) saturate(150%);border:1px solid var(--glass-border);border-radius:24px;padding:28px 24px;box-shadow:0 30px 80px rgba(0,0,0,0.4);}
+.overlay-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.overlay-head h3{font-size:24px;font-weight:800;margin:0;letter-spacing:-0.02em;}
+.order-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;}
+.order-card .oc-top{display:flex;justify-content:space-between;font-size:14px;font-weight:700;gap:8px;}
+.order-card .oc-sub{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+.order-detail{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:center;}
+.order-detail img{width:160px;height:160px;border-radius:12px;background:#fff;padding:8px;}
 </style>
 </head>
 <body>
 <div class="shell">
-  <header class="top"><span class="dot"></span><span class="mark">Skyroute</span></header>
+  <header class="top">
+    <span class="dot"></span><span class="mark">Skyroute</span>
+    <button type="button" class="icon-btn" id="ordersBtn" aria-label="查詢我的訂單">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l2-3h14l2 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M3 7h18"/><path d="M9 12h6"/></svg>
+    </button>
+    <button type="button" class="icon-btn" id="themeToggle" aria-label="切換淺色／深色模式">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </header>
   <div class="panel">
     <div class="track"><i id="t1"></i><i id="t2"></i><i id="t3"></i><i id="t4"></i></div>
 
@@ -209,41 +256,50 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
       <div class="seg" id="tripSeg">
         <button type="button" class="seg-btn active" data-value="oneway">單程</button>
         <button type="button" class="seg-btn" data-value="roundtrip">來回</button>
+        <button type="button" class="seg-btn" data-value="multicity">多航段</button>
       </div>
 
-      <div class="field">
-        <label for="fromInp">出發地</label>
-        <div class="ico-input">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
-          <input type="text" id="fromInp" placeholder="打中文或英文城市名" autocomplete="off" value="台北 TPE">
+      <div id="simpleFields">
+        <div class="field">
+          <label for="fromInp">出發地</label>
+          <div class="ico-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
+            <input type="text" id="fromInp" placeholder="打中文或英文城市名" autocomplete="off" value="台北 TPE">
+          </div>
+          <div class="acomp-menu" id="fromMenu"></div>
         </div>
-        <div class="acomp-menu" id="fromMenu"></div>
+        <div class="field">
+          <label for="toInp">目的地</label>
+          <div class="ico-input">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
+            <input type="text" id="toInp" placeholder="打中文或英文城市名" autocomplete="off" value="東京 TYO">
+          </div>
+          <div class="acomp-menu" id="toMenu"></div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="dateInp">去程日期</label>
+            <div class="ico-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+              <input type="date" id="dateInp">
+            </div>
+          </div>
+          <div class="field" id="returnField" style="display:none;">
+            <label for="returnDateInp">回程日期</label>
+            <div class="ico-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+              <input type="date" id="returnDateInp">
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="field">
-        <label for="toInp">目的地</label>
-        <div class="ico-input">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>
-          <input type="text" id="toInp" placeholder="打中文或英文城市名" autocomplete="off" value="東京 TYO">
-        </div>
-        <div class="acomp-menu" id="toMenu"></div>
+      <div id="multiFields" style="display:none;">
+        <div id="multiSegList"></div>
+        <button type="button" class="add-seg-btn" id="addSegBtn">＋ 新增航段</button>
       </div>
 
       <div class="row2">
-        <div class="field">
-          <label for="dateInp">去程日期</label>
-          <div class="ico-input">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
-            <input type="date" id="dateInp">
-          </div>
-        </div>
-        <div class="field" id="returnField" style="display:none;">
-          <label for="returnDateInp">回程日期</label>
-          <div class="ico-input">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
-            <input type="date" id="returnDateInp">
-          </div>
-        </div>
         <div class="field">
           <label for="cabinTrigger">艙等</label>
           <div class="csel" id="cabinCsel">
@@ -261,50 +317,34 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="field">
-        <label for="paxTrigger">乘客</label>
-        <div class="csel" id="paxCsel">
-          <button type="button" class="csel-trigger" id="paxTrigger" aria-haspopup="true" aria-expanded="false">
-            <svg class="csel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>
-            <span class="csel-value" id="paxSummary">1 大人</span>
-            <svg class="csel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="csel-menu pax-menu" id="paxMenu">
-            <div class="pax-row">
-              <div><div class="pax-label">大人</div><div class="pax-sub">12 歲以上</div></div>
-              <div class="stepper">
-                <button type="button" class="step-btn" data-field="adults" data-delta="-1">−</button>
-                <span class="step-val" id="adultsVal">1</span>
-                <button type="button" class="step-btn" data-field="adults" data-delta="1">+</button>
+        <div class="field">
+          <label for="paxTrigger">乘客</label>
+          <div class="csel" id="paxCsel">
+            <button type="button" class="csel-trigger" id="paxTrigger" aria-haspopup="true" aria-expanded="false">
+              <svg class="csel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg>
+              <span class="csel-value" id="paxSummary">1 大人</span>
+              <svg class="csel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="csel-menu pax-menu" id="paxMenu">
+              <div class="pax-row">
+                <div><div class="pax-label">大人</div><div class="pax-sub">12 歲以上</div></div>
+                <div class="stepper"><button type="button" class="step-btn" data-field="adults" data-delta="-1">−</button><span class="step-val" id="adultsVal">1</span><button type="button" class="step-btn" data-field="adults" data-delta="1">+</button></div>
               </div>
-            </div>
-            <div class="pax-row">
-              <div><div class="pax-label">小孩</div><div class="pax-sub">2–11 歲</div></div>
-              <div class="stepper">
-                <button type="button" class="step-btn" data-field="children" data-delta="-1">−</button>
-                <span class="step-val" id="childrenVal">0</span>
-                <button type="button" class="step-btn" data-field="children" data-delta="1">+</button>
+              <div class="pax-row">
+                <div><div class="pax-label">小孩</div><div class="pax-sub">2–11 歲</div></div>
+                <div class="stepper"><button type="button" class="step-btn" data-field="children" data-delta="-1">−</button><span class="step-val" id="childrenVal">0</span><button type="button" class="step-btn" data-field="children" data-delta="1">+</button></div>
               </div>
-            </div>
-            <div class="pax-row">
-              <div><div class="pax-label">嬰兒</div><div class="pax-sub">2 歲以下</div></div>
-              <div class="stepper">
-                <button type="button" class="step-btn" data-field="infants" data-delta="-1">−</button>
-                <span class="step-val" id="infantsVal">0</span>
-                <button type="button" class="step-btn" data-field="infants" data-delta="1">+</button>
+              <div class="pax-row">
+                <div><div class="pax-label">嬰兒</div><div class="pax-sub">2 歲以下</div></div>
+                <div class="stepper"><button type="button" class="step-btn" data-field="infants" data-delta="-1">−</button><span class="step-val" id="infantsVal">0</span><button type="button" class="step-btn" data-field="infants" data-delta="1">+</button></div>
               </div>
+              <button type="button" class="btn btn-primary pax-done" id="paxDone">完成</button>
             </div>
-            <button type="button" class="btn btn-primary pax-done" id="paxDone">完成</button>
           </div>
         </div>
       </div>
 
-      <label class="toggle-row" for="directOnly">
-        只顯示直飛
-        <span class="switch"><input type="checkbox" id="directOnly"><span class="switch-track"></span></span>
-      </label>
+      <label class="toggle-row" for="directOnly">只顯示直飛<span class="switch"><input type="checkbox" id="directOnly"><span class="switch-track"></span></span></label>
 
       <p class="error" id="searchError" style="display:none;"></p>
       <button class="btn btn-primary" id="searchBtn" type="button">
@@ -336,9 +376,7 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     </div>
 
     <div class="step" id="step4">
-      <div class="success-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      </div>
+      <div class="success-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
       <h2 style="text-align:center;">訂購完成</h2>
       <p class="ref">訂位代號</p>
       <p class="ref-code" id="refCode"></p>
@@ -348,9 +386,23 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
         重新開始
       </button>
     </div>
-
   </div>
   <footer class="note">搜尋為 Duffel 真實航班資料（sandbox），訂購存於真實資料庫</footer>
+</div>
+
+<div class="overlay" id="ordersOverlay">
+  <div class="overlay-panel">
+    <div class="overlay-head">
+      <h3>我的訂單</h3>
+      <button type="button" class="icon-btn" id="ordersClose" aria-label="關閉"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="field"><label for="ordersEmail">Email</label><input type="email" id="ordersEmail" placeholder="name@example.com"></div>
+    <button type="button" class="btn btn-primary" id="ordersSearchBtn" style="margin-bottom:16px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      查詢訂單
+    </button>
+    <div id="ordersList"></div>
+  </div>
 </div>
 
 <script>
@@ -359,65 +411,168 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     tripType:'oneway', fromCode:'TPE', toCode:'TYO', fromLabel:'台北 TPE', toLabel:'東京 TYO',
     date:'', returnDate:'', cabin:'any', directOnly:false,
     adults:1, children:0, infants:0,
-    flight:null, currency:'TWD', flightId:null
+    segments:[], flight:null, currency:'TWD', flightId:null
   };
   const $ = id => document.getElementById(id);
+  const PIN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.3"/></svg>';
+  const CAL_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="16" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>';
 
-  const d = new Date(); d.setDate(d.getDate()+14);
-  $('dateInp').value = d.toISOString().slice(0,10);
-  const rd = new Date(d); rd.setDate(rd.getDate()+7);
+  // ---- theme toggle ----
+  function applyTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    $('colorSchemeMeta').setAttribute('content', theme);
+    try{ localStorage.setItem('skyroute-theme', theme); }catch(e){}
+  }
+  $('themeToggle').addEventListener('click', function(){
+    const cur = document.documentElement.getAttribute('data-theme');
+    applyTheme(cur==='light' ? 'dark' : 'light');
+  });
+  applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
+
+  // ---- orders overlay ----
+  $('ordersBtn').addEventListener('click', function(){ $('ordersOverlay').classList.add('open'); });
+  $('ordersClose').addEventListener('click', function(){ $('ordersOverlay').classList.remove('open'); });
+  $('ordersSearchBtn').addEventListener('click', async function(){
+    const email = $('ordersEmail').value.trim();
+    const list = $('ordersList');
+    if(!email){ list.innerHTML = '<p class="error" style="margin:0;">請輸入 Email</p>'; return; }
+    list.innerHTML = '<p class="meta" style="margin:0;">查詢中…</p>';
+    try{
+      const res = await fetch('/api/bookings?email='+encodeURIComponent(email));
+      const orders = await res.json();
+      if(!res.ok) throw new Error(orders.error||'failed');
+      if(!orders.length){ list.innerHTML = '<p class="meta" style="margin:0;">找不到這個 Email 的訂單</p>'; return; }
+      list.innerHTML = '';
+      orders.forEach(function(o){
+        const card = document.createElement('div'); card.className='order-card';
+        card.innerHTML = '<div class="oc-top"><span>'+o.airline+' '+o.flightNo+'</span><span>'+o.referenceCode+'</span></div><div class="oc-sub">'+o.origin+' → '+o.destination+'　'+fmtMoney(o.totalPrice,'TWD')+'</div>';
+        card.addEventListener('click', async function(){
+          const existing = card.querySelector('.order-detail');
+          if(existing){ existing.remove(); return; }
+          const detail = document.createElement('div'); detail.className='order-detail';
+          detail.innerHTML = '<p class="meta" style="margin:0;">載入電子機票中…</p>';
+          card.appendChild(detail);
+          try{
+            const qr = await fetch('/api/bookings/'+encodeURIComponent(o.referenceCode)+'/qrcode');
+            const qd = await qr.json();
+            if(!qr.ok) throw new Error(qd.error||'qr failed');
+            detail.innerHTML = '<img src="'+qd.qrCodeDataUrl+'" alt="電子機票 QR Code"><p class="meta" style="margin-top:10px;margin-bottom:0;">'+o.passengerName+'　'+o.depTime+' – '+o.arrTime+'</p>';
+          }catch(e){ detail.innerHTML = '<p class="error" style="margin:0;">QR Code 讀取失敗</p>'; }
+        });
+        list.appendChild(card);
+      });
+    }catch(e){ list.innerHTML = '<p class="error" style="margin:0;">查詢失敗，請稍後再試</p>'; }
+  });
+
+  const d0 = new Date(); d0.setDate(d0.getDate()+14);
+  const DEFAULT_DATE = d0.toISOString().slice(0,10);
+  $('dateInp').value = DEFAULT_DATE;
+  const rd = new Date(d0); rd.setDate(rd.getDate()+7);
   $('returnDateInp').value = rd.toISOString().slice(0,10);
 
   function fmtMoney(n, currency){
     const cur = currency || 'TWD';
     const symbols = { TWD:'NT$', USD:'US$', GBP:'£', EUR:'€', JPY:'¥' };
-    const prefix = symbols[cur] || (cur + ' ');
-    return prefix + Math.round(n).toLocaleString('en-US');
+    return (symbols[cur] || (cur+' ')) + Math.round(n).toLocaleString('en-US');
   }
+
+  function wireAutocomplete(input, menu, onPick){
+    let timer=null;
+    input.addEventListener('input', function(){
+      const q = input.value.trim();
+      clearTimeout(timer);
+      if(q.length<1){ menu.classList.remove('open'); return; }
+      timer=setTimeout(async function(){
+        try{
+          const res = await fetch('/api/places?query='+encodeURIComponent(q));
+          const items = await res.json();
+          menu.innerHTML='';
+          if(!items.length){ menu.innerHTML='<div class="acomp-empty">找不到符合的地點，換個關鍵字試試</div>'; }
+          else{
+            items.forEach(function(p){
+              const row=document.createElement('div'); row.className='acomp-opt';
+              row.innerHTML='<div class="a-city">'+p.cityName+' '+p.iataCode+'</div><div class="a-name">'+p.name+'</div>';
+              row.addEventListener('click', function(){
+                const label=p.cityName+' '+p.iataCode;
+                input.value=label;
+                onPick(p, label);
+                menu.classList.remove('open');
+              });
+              menu.appendChild(row);
+            });
+          }
+          menu.classList.add('open');
+        }catch(e){ menu.classList.remove('open'); }
+      },250);
+    });
+    document.addEventListener('click', function(e){ if(!input.contains(e.target) && !menu.contains(e.target)) menu.classList.remove('open'); });
+  }
+  wireAutocomplete($('fromInp'), $('fromMenu'), function(p,label){ state.fromCode=p.iataCode; state.fromLabel=label; });
+  wireAutocomplete($('toInp'), $('toMenu'), function(p,label){ state.toCode=p.iataCode; state.toLabel=label; });
 
   document.querySelectorAll('#tripSeg .seg-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
       document.querySelectorAll('#tripSeg .seg-btn').forEach(function(b){ b.classList.remove('active'); });
       btn.classList.add('active');
       state.tripType = btn.getAttribute('data-value');
-      $('returnField').style.display = state.tripType === 'roundtrip' ? '' : 'none';
+      $('returnField').style.display = state.tripType==='roundtrip' ? '' : 'none';
+      $('simpleFields').style.display = state.tripType==='multicity' ? 'none' : '';
+      $('multiFields').style.display = state.tripType==='multicity' ? '' : 'none';
+      if(state.tripType==='multicity' && state.segments.length<2){
+        state.segments = [
+          { fromCode:state.fromCode, fromLabel:state.fromLabel, toCode:state.toCode, toLabel:state.toLabel, date:$('dateInp').value },
+          { fromCode:'', fromLabel:'', toCode:'', toLabel:'', date:DEFAULT_DATE }
+        ];
+        renderMultiSegments();
+      }
     });
   });
 
-  function buildCustomSelect(wrapId, onPick){
-    const wrap = $(wrapId);
-    const trigger = wrap.querySelector('.csel-trigger');
-    const valueEl = wrap.querySelector('.csel-value');
-    const menu = wrap.querySelector('.csel-menu');
-    const opts = Array.from(menu.querySelectorAll('.csel-opt'));
-    function close(){ wrap.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
-    function openMenu(){
-      document.querySelectorAll('.csel.open').forEach(function(w){ if(w!==wrap) w.classList.remove('open'); });
-      wrap.classList.add('open'); trigger.setAttribute('aria-expanded','true');
-    }
-    trigger.addEventListener('click', function(e){ e.stopPropagation(); wrap.classList.contains('open') ? close() : openMenu(); });
-    opts.forEach(function(opt){
-      opt.addEventListener('click', function(){
-        opts.forEach(function(o){ o.classList.remove('sel'); });
-        opt.classList.add('sel');
-        valueEl.textContent = opt.textContent;
-        close();
-        if(onPick) onPick(opt.getAttribute('data-value'), opt.textContent);
-      });
+  function renderMultiSegments(){
+    const container = $('multiSegList');
+    container.innerHTML = '';
+    state.segments.forEach(function(seg, idx){
+      const block = document.createElement('div');
+      block.className = 'seg-block';
+      block.innerHTML =
+        '<div class="seg-num-row"><span class="seg-num">'+(idx+1)+'</span>'+(state.segments.length>2 ? '<button type="button" class="seg-remove">移除</button>' : '<span></span>')+'</div>'+
+        '<div class="field"><label>出發地</label><div class="ico-input">'+PIN_SVG+'<input type="text" class="mfrom" placeholder="打中文或英文城市名" autocomplete="off" value="'+seg.fromLabel+'"></div><div class="acomp-menu"></div></div>'+
+        '<div class="field"><label>目的地</label><div class="ico-input">'+PIN_SVG+'<input type="text" class="mto" placeholder="打中文或英文城市名" autocomplete="off" value="'+seg.toLabel+'"></div><div class="acomp-menu"></div></div>'+
+        '<div class="field"><label>日期</label><div class="ico-input">'+CAL_SVG+'<input type="date" class="mdate" value="'+seg.date+'"></div></div>';
+
+      const menus = block.querySelectorAll('.acomp-menu');
+      const fromInput = block.querySelector('.mfrom'), toInput = block.querySelector('.mto'), dateInput = block.querySelector('.mdate');
+      wireAutocomplete(fromInput, menus[0], function(p,label){ seg.fromCode=p.iataCode; seg.fromLabel=label; });
+      wireAutocomplete(toInput, menus[1], function(p,label){ seg.toCode=p.iataCode; seg.toLabel=label; });
+      dateInput.addEventListener('change', function(){ seg.date=dateInput.value; });
+
+      const removeBtn = block.querySelector('.seg-remove');
+      if(removeBtn){ removeBtn.addEventListener('click', function(){ state.segments.splice(idx,1); renderMultiSegments(); }); }
+      container.appendChild(block);
     });
+    $('addSegBtn').disabled = state.segments.length >= 6;
+  }
+  $('addSegBtn').addEventListener('click', function(){
+    if(state.segments.length>=6) return;
+    state.segments.push({ fromCode:'', fromLabel:'', toCode:'', toLabel:'', date:DEFAULT_DATE });
+    renderMultiSegments();
+  });
+
+  function buildCustomSelect(wrapId, onPick){
+    const wrap=$(wrapId), trigger=wrap.querySelector('.csel-trigger'), valueEl=wrap.querySelector('.csel-value'), menu=wrap.querySelector('.csel-menu');
+    const opts=Array.from(menu.querySelectorAll('.csel-opt'));
+    function close(){ wrap.classList.remove('open'); trigger.setAttribute('aria-expanded','false'); }
+    function openMenu(){ document.querySelectorAll('.csel.open').forEach(function(w){ if(w!==wrap) w.classList.remove('open'); }); wrap.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
+    trigger.addEventListener('click', function(e){ e.stopPropagation(); wrap.classList.contains('open') ? close() : openMenu(); });
+    opts.forEach(function(opt){ opt.addEventListener('click', function(){ opts.forEach(function(o){ o.classList.remove('sel'); }); opt.classList.add('sel'); valueEl.textContent=opt.textContent; close(); if(onPick) onPick(opt.getAttribute('data-value')); }); });
     document.addEventListener('click', function(e){ if(!wrap.contains(e.target)) close(); });
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') close(); });
   }
-  buildCustomSelect('cabinCsel', function(val){ state.cabin = val; });
+  buildCustomSelect('cabinCsel', function(val){ state.cabin=val; });
 
-  const paxWrap = $('paxCsel');
-  const paxTrigger = $('paxTrigger');
+  const paxWrap=$('paxCsel'), paxTrigger=$('paxTrigger');
   function paxClose(){ paxWrap.classList.remove('open'); paxTrigger.setAttribute('aria-expanded','false'); }
-  function paxOpen(){
-    document.querySelectorAll('.csel.open').forEach(function(w){ if(w!==paxWrap) w.classList.remove('open'); });
-    paxWrap.classList.add('open'); paxTrigger.setAttribute('aria-expanded','true');
-  }
-  paxTrigger.addEventListener('click', function(e){ e.stopPropagation(); paxWrap.classList.contains('open') ? paxClose() : paxOpen(); });
+  paxTrigger.addEventListener('click', function(e){ e.stopPropagation(); document.querySelectorAll('.csel.open').forEach(function(w){ if(w!==paxWrap) w.classList.remove('open'); }); paxWrap.classList.contains('open') ? paxClose() : (paxWrap.classList.add('open'), paxTrigger.setAttribute('aria-expanded','true')); });
   document.addEventListener('click', function(e){ if(!paxWrap.contains(e.target)) paxClose(); });
   $('paxDone').addEventListener('click', paxClose);
 
@@ -427,12 +582,11 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
       $(f+'Val').textContent = state[f];
       const lim = PAX_LIMITS[f];
       document.querySelectorAll('.step-btn[data-field="'+f+'"]').forEach(function(btn){
-        const delta = parseInt(btn.getAttribute('data-delta'),10);
-        const next = state[f] + delta;
-        btn.disabled = next < lim[0] || next > lim[1];
+        const delta=parseInt(btn.getAttribute('data-delta'),10), next=state[f]+delta;
+        btn.disabled = next<lim[0] || next>lim[1];
       });
     });
-    const parts = [];
+    const parts=[];
     if(state.adults>0) parts.push(state.adults+' 大人');
     if(state.children>0) parts.push(state.children+' 小孩');
     if(state.infants>0) parts.push(state.infants+' 嬰兒');
@@ -440,97 +594,70 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
   }
   document.querySelectorAll('.step-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
-      const field = btn.getAttribute('data-field');
-      const delta = parseInt(btn.getAttribute('data-delta'),10);
-      const lim = PAX_LIMITS[field];
-      const next = state[field] + delta;
-      if(next < lim[0] || next > lim[1]) return;
-      state[field] = next;
-      updatePaxUI();
+      const field=btn.getAttribute('data-field'), delta=parseInt(btn.getAttribute('data-delta'),10), lim=PAX_LIMITS[field], next=state[field]+delta;
+      if(next<lim[0] || next>lim[1]) return;
+      state[field]=next; updatePaxUI();
     });
   });
   updatePaxUI();
 
-  $('directOnly').addEventListener('change', function(){ state.directOnly = $('directOnly').checked; });
-
-  function buildAutocomplete(inputId, menuId, codeField, labelField){
-    const input = $(inputId), menu = $(menuId);
-    let timer = null;
-    input.addEventListener('input', function(){
-      const q = input.value.trim();
-      clearTimeout(timer);
-      if(q.length < 1){ menu.classList.remove('open'); return; }
-      timer = setTimeout(async function(){
-        try{
-          const res = await fetch('/api/places?query='+encodeURIComponent(q));
-          const items = await res.json();
-          menu.innerHTML = '';
-          if(!items.length){
-            menu.innerHTML = '<div class="acomp-empty">找不到符合的地點，換個關鍵字試試</div>';
-          } else {
-            items.forEach(function(p){
-              const row = document.createElement('div');
-              row.className = 'acomp-opt';
-              row.innerHTML = '<div class="a-city">'+p.cityName+' '+p.iataCode+'</div><div class="a-name">'+p.name+'</div>';
-              row.addEventListener('click', function(){
-                const label = p.cityName+' '+p.iataCode;
-                input.value = label;
-                state[codeField] = p.iataCode;
-                state[labelField] = label;
-                menu.classList.remove('open');
-              });
-              menu.appendChild(row);
-            });
-          }
-          menu.classList.add('open');
-        }catch(e){ menu.classList.remove('open'); }
-      }, 250);
-    });
-    document.addEventListener('click', function(e){ if(!input.contains(e.target) && !menu.contains(e.target)) menu.classList.remove('open'); });
-  }
-  buildAutocomplete('fromInp','fromMenu','fromCode','fromLabel');
-  buildAutocomplete('toInp','toMenu','toCode','toLabel');
+  $('directOnly').addEventListener('change', function(){ state.directOnly=$('directOnly').checked; });
 
   function goStep(n){
     for(let i=1;i<=4;i++){ $('step'+i).classList.toggle('active', i===n); }
-    for(let i=1;i<=4;i++){
-      $('t'+i).classList.toggle('on', i===n);
-      $('t'+i).classList.toggle('done', i<n);
-    }
+    for(let i=1;i<=4;i++){ $('t'+i).classList.toggle('on', i===n); $('t'+i).classList.toggle('done', i<n); }
   }
 
   $('searchBtn').addEventListener('click', async function(){
-    if($('fromInp').value.trim() !== state.fromLabel){ $('searchError').textContent='請從建議清單選擇出發地'; $('searchError').style.display=''; return; }
-    if($('toInp').value.trim() !== state.toLabel){ $('searchError').textContent='請從建議清單選擇目的地'; $('searchError').style.display=''; return; }
-    if(state.fromCode === state.toCode){ $('searchError').textContent='出發地與目的地不能相同'; $('searchError').style.display=''; return; }
-    if(state.adults + state.children + state.infants < 1){ $('searchError').textContent='請至少選擇 1 位乘客'; $('searchError').style.display=''; return; }
+    let segPayload = [];
+    if(state.tripType==='multicity'){
+      for(const seg of state.segments){
+        if(!seg.fromCode || !seg.toCode || !seg.date){ $('searchError').textContent='請完整選擇每一段航程的出發地、目的地與日期'; $('searchError').style.display=''; return; }
+        segPayload.push({ origin:seg.fromCode, destination:seg.toCode, date:seg.date });
+      }
+    } else {
+      if($('fromInp').value.trim() !== state.fromLabel){ $('searchError').textContent='請從建議清單選擇出發地'; $('searchError').style.display=''; return; }
+      if($('toInp').value.trim() !== state.toLabel){ $('searchError').textContent='請從建議清單選擇目的地'; $('searchError').style.display=''; return; }
+      if(state.fromCode === state.toCode){ $('searchError').textContent='出發地與目的地不能相同'; $('searchError').style.display=''; return; }
+      state.date = $('dateInp').value;
+      segPayload.push({ origin:state.fromCode, destination:state.toCode, date:state.date });
+      if(state.tripType==='roundtrip'){
+        state.returnDate = $('returnDateInp').value;
+        segPayload.push({ origin:state.toCode, destination:state.fromCode, date:state.returnDate });
+      }
+    }
+    if(state.adults+state.children+state.infants < 1){ $('searchError').textContent='請至少選擇 1 位乘客'; $('searchError').style.display=''; return; }
     $('searchError').style.display='none';
 
-    state.date = $('dateInp').value;
-    state.returnDate = $('returnDateInp').value;
+    const routeLabel = state.tripType==='multicity'
+      ? state.segments.map(function(s){ return s.fromLabel+'→'+s.toLabel; }).join('　')
+      : state.fromLabel+' → '+state.toLabel;
 
-    const btn = $('searchBtn'); btn.disabled = true;
+    const btn=$('searchBtn'); btn.disabled=true;
     try{
       const qs = new URLSearchParams({
-        from: state.fromCode, to: state.toCode, date: state.date,
-        tripType: state.tripType, cabin: state.cabin, directOnly: state.directOnly,
+        segments: JSON.stringify(segPayload), tripType: state.tripType, cabin: state.cabin, directOnly: state.directOnly,
         adults: state.adults, children: state.children, infants: state.infants
       });
-      if(state.tripType==='roundtrip') qs.set('returnDate', state.returnDate);
       const res = await fetch('/api/flights?'+qs.toString());
       const flights = await res.json();
       if(!res.ok) throw new Error(flights.error || 'search failed');
 
       const paxTotal = state.adults+state.children+state.infants;
-      $('resultsMeta').textContent = state.fromLabel+' → '+state.toLabel+'　'+state.date+(state.tripType==='roundtrip' ? '～'+state.returnDate : '')+'　'+paxTotal+' 位乘客';
-      const list = $('flightList'); list.innerHTML='';
-      if(!flights.length){ list.innerHTML = '<p class="meta" style="margin:0;">這條航線目前沒有符合條件的航班</p>'; }
+      $('resultsMeta').textContent = routeLabel+'　'+paxTotal+' 位乘客';
+      const list=$('flightList'); list.innerHTML='';
+      if(!flights.length){ list.innerHTML='<p class="meta" style="margin:0;">這個條件目前沒有符合的航班</p>'; }
       flights.forEach(function(f){
-        const row = document.createElement('div');
-        row.className='flight-row';
-        let html = '<div class="fl-l"><div class="airline">'+f.airline+' '+f.flightNo+'</div><div class="time">去程 '+f.dep+' – '+f.arr+'　'+f.duration+'</div>';
-        if(f.returnInfo){ html += '<div class="time ret">回程 '+f.returnInfo.dep+' – '+f.returnInfo.arr+'　'+f.returnInfo.duration+'</div>'; }
-        html += '</div><div class="fl-r"><div class="price">'+fmtMoney(f.totalPrice, f.currency)+'</div><div class="tag">'+(f.stops===0?'直飛':'轉機 '+f.stops+' 次')+'</div></div>';
+        const row=document.createElement('div'); row.className='flight-row';
+        let html='<div class="fl-l"><div class="airline">'+f.airline+' '+f.flightNo+'</div>';
+        const legs = f.legs || [{dep:f.dep,arr:f.arr,duration:f.duration}];
+        legs.forEach(function(leg,i){
+          let prefix='';
+          if(legs.length===2) prefix = i===0?'去程 ':'回程 ';
+          else if(legs.length>=3) prefix = '第'+(i+1)+'段 ';
+          html += '<div class="time">'+prefix+leg.dep+' – '+leg.arr+'　'+leg.duration+'</div>';
+        });
+        html += '</div><div class="fl-r"><div class="price">'+fmtMoney(f.totalPrice,f.currency)+'</div><div class="tag">'+(f.stops===0?'直飛':'轉機 '+f.stops+' 次')+'</div></div>';
         row.innerHTML = html;
         row.addEventListener('click', function(){ pickFlight(f); });
         list.appendChild(row);
@@ -539,17 +666,15 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     }catch(e){
       $('searchError').textContent='搜尋失敗，請稍後再試';
       $('searchError').style.display='';
-    }finally{
-      btn.disabled = false;
-    }
+    }finally{ btn.disabled=false; }
   });
 
   $('backTo1').addEventListener('click', function(){ goStep(1); });
 
   async function pickFlight(f){
-    state.flight = f; state.flightId = null;
-    const paxTotal = state.adults+state.children+state.infants;
-    $('passMeta').textContent = f.airline+' '+f.flightNo+'　'+state.fromLabel+' → '+state.toLabel+'　'+state.date;
+    state.flight=f; state.flightId=null;
+    const paxTotal=state.adults+state.children+state.infants;
+    $('passMeta').textContent = f.airline+' '+f.flightNo;
     goStep(3);
     $('toConfirm').disabled = true;
     try{
@@ -563,13 +688,10 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     }catch(e){
       $('passError').textContent='航班資料處理失敗，請返回重新選擇';
       $('passError').style.display='';
-    }finally{
-      $('toConfirm').disabled = false;
-    }
+    }finally{ $('toConfirm').disabled=false; }
   }
 
   $('backTo2').addEventListener('click', function(){ goStep(2); });
-
   ['nameInp','emailInp','phoneInp'].forEach(function(id){ $(id).addEventListener('input', function(){ $('passError').style.display='none'; }); });
 
   function sumRow(k,v){ return '<div class="sum-row"><span class="k">'+k+'</span><span>'+v+'</span></div>'; }
@@ -580,8 +702,8 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     if(!name||!email||!phone||email.indexOf('@')===-1){ $('passError').textContent='請完整填寫姓名、Email 與電話'; $('passError').style.display=''; return; }
     $('passError').style.display='none';
 
-    const paxTotal = state.adults+state.children+state.infants;
-    const btn = $('toConfirm'); btn.disabled = true;
+    const paxTotal=state.adults+state.children+state.infants;
+    const btn=$('toConfirm'); btn.disabled=true;
     try{
       const res = await fetch('/api/bookings', {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -591,19 +713,17 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
       if(!res.ok){ $('passError').textContent = data.error || '訂購失敗，請稍後再試'; $('passError').style.display=''; return; }
 
       $('refCode').textContent = data.referenceCode;
+      const routeLabel = state.tripType==='multicity' ? state.segments.map(function(s){ return s.fromLabel+'→'+s.toLabel; }).join('　') : state.fromLabel+' → '+state.toLabel;
       $('summaryCard').innerHTML =
         sumRow('航班', state.flight.airline+' '+state.flight.flightNo)+
-        sumRow('航線', state.fromLabel+' → '+state.toLabel)+
-        sumRow('日期時間', state.date+'　'+state.flight.dep+' – '+state.flight.arr)+
+        sumRow('航線', routeLabel)+
         sumRow('乘客', name+'　x '+paxTotal)+
         '<div class="sum-total"><span>總金額</span><span>'+fmtMoney(data.totalPrice, state.currency)+'</span></div>';
       goStep(4);
     }catch(e){
       $('passError').textContent='連線失敗，請稍後再試';
       $('passError').style.display='';
-    }finally{
-      btn.disabled = false;
-    }
+    }finally{ btn.disabled=false; }
   });
 
   $('restartBtn').addEventListener('click', function(){
