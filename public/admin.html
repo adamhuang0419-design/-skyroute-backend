@@ -111,7 +111,7 @@ tr:last-child td{border-bottom:none;}
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>訂位代號</th><th>旅客</th><th>航班</th><th>航線</th><th>金額</th><th>狀態</th><th>時間</th><th></th></tr></thead>
+          <thead><tr><th>訂位代號</th><th>旅客</th><th>航班</th><th>航線</th><th>航班時間</th><th>金額</th><th>狀態</th><th>建立時間</th><th></th></tr></thead>
           <tbody id="ordersBody"></tbody>
         </table>
         <div class="empty" id="emptyMsg" style="display:none;">沒有符合條件的訂單</div>
@@ -198,11 +198,19 @@ tr:last-child td{border-bottom:none;}
       $('emptyMsg').style.display = orders.length ? 'none' : '';
       orders.forEach(function(o){
         const tr = document.createElement('tr');
+        const legs = (o.legs && o.legs.length) ? o.legs : [{date:'',dep:o.depTime,arr:o.arrTime,duration:''}];
+        const legHtml = legs.map(function(leg,i){
+          let label='';
+          if(legs.length===2) label = i===0?'去程 ':'回程 ';
+          else if(legs.length>=3) label = '第'+(i+1)+'段 ';
+          return '<div>'+label+leg.date+' '+leg.dep+'–'+leg.arr+'（'+leg.duration+'）</div>';
+        }).join('');
         tr.innerHTML =
           '<td>'+o.referenceCode+'</td>'+
           '<td>'+o.passengerName+'<br><span style="color:var(--ink-soft);font-size:12px;">'+o.passengerEmail+'</span></td>'+
           '<td>'+o.airline+' '+o.flightNo+'</td>'+
           '<td>'+o.origin+' → '+o.destination+'</td>'+
+          '<td style="font-size:13px;white-space:normal;">'+legHtml+'</td>'+
           '<td>'+fmtMoney(o.totalPrice)+'</td>'+
           '<td>'+badge(o.status)+'</td>'+
           '<td style="color:var(--ink-soft);font-size:12px;">'+new Date(o.createdAt).toLocaleString('zh-TW')+'</td>'+
