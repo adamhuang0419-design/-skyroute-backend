@@ -456,7 +456,15 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
             const qr = await fetch('/api/bookings/'+encodeURIComponent(o.referenceCode)+'/qrcode');
             const qd = await qr.json();
             if(!qr.ok) throw new Error(qd.error||'qr failed');
-            detail.innerHTML = '<img src="'+qd.qrCodeDataUrl+'" alt="電子機票 QR Code"><p class="meta" style="margin-top:10px;margin-bottom:0;">'+o.passengerName+'　'+o.depTime+' – '+o.arrTime+'</p>';
+            const legs = (o.legs && o.legs.length) ? o.legs : [{date:'',dep:o.depTime,arr:o.arrTime,duration:''}];
+            let legLines = '';
+            legs.forEach(function(leg,i){
+              let label = '';
+              if(legs.length===2) label = i===0?'去程 ':'回程 ';
+              else if(legs.length>=3) label = '第'+(i+1)+'段 ';
+              legLines += '<p class="meta" style="margin:2px 0;">'+label+leg.date+'　'+leg.dep+' – '+leg.arr+'　（'+leg.duration+'）</p>';
+            });
+            detail.innerHTML = '<img src="'+qd.qrCodeDataUrl+'" alt="電子機票 QR Code"><p class="meta" style="margin-top:10px;margin-bottom:2px;">'+o.passengerName+'</p>'+legLines;
           }catch(e){ detail.innerHTML = '<p class="error" style="margin:0;">QR Code 讀取失敗</p>'; }
         });
         list.appendChild(card);
@@ -680,7 +688,7 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     try{
       const selRes = await fetch('/api/select-offer', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ source:f.source, localFlightId:f.localFlightId, airline:f.airline, flightNo:f.flightNo, dep:f.dep, arr:f.arr, duration:f.duration, stops:f.stops, totalPrice:f.totalPrice, currency:f.currency, from:state.fromLabel, to:state.toLabel, pax:paxTotal })
+        body: JSON.stringify({ source:f.source, localFlightId:f.localFlightId, airline:f.airline, flightNo:f.flightNo, legs:f.legs, totalPrice:f.totalPrice, currency:f.currency, from:state.fromLabel, to:state.toLabel, pax:paxTotal })
       });
       const sel = await selRes.json();
       if(!selRes.ok) throw new Error(sel.error || 'select failed');
@@ -714,9 +722,18 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
 
       $('refCode').textContent = data.referenceCode;
       const routeLabel = state.tripType==='multicity' ? state.segments.map(function(s){ return s.fromLabel+'→'+s.toLabel; }).join('　') : state.fromLabel+' → '+state.toLabel;
+      const legs = state.flight.legs || [{date:state.date, dep:state.flight.dep, arr:state.flight.arr, duration:state.flight.duration}];
+      let legRows = '';
+      legs.forEach(function(leg,i){
+        let label = '日期時間';
+        if(legs.length===2) label = i===0?'去程':'回程';
+        else if(legs.length>=3) label = '第'+(i+1)+'段';
+        legRows += sumRow(label, leg.date+'　'+leg.dep+' – '+leg.arr+'　（'+leg.duration+'）');
+      });
       $('summaryCard').innerHTML =
         sumRow('航班', state.flight.airline+' '+state.flight.flightNo)+
         sumRow('航線', routeLabel)+
+        legRows+
         sumRow('乘客', name+'　x '+paxTotal)+
         '<div class="sum-total"><span>總金額</span><span>'+fmtMoney(data.totalPrice, state.currency)+'</span></div>';
       goStep(4);
