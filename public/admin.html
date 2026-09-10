@@ -61,6 +61,20 @@ header.admin-top{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
 .filters input,.filters select{width:auto;min-width:140px;flex:1;}
 
 .table-wrap{overflow-x:auto;}
+.cards-wrap{display:none;}
+.order-card-admin{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:14px;margin-bottom:10px;}
+.oca-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;margin-bottom:6px;}
+.oca-sub{font-size:12px;color:var(--ink-soft,var(--ink));opacity:0.85;margin-bottom:2px;}
+.oca-route{font-size:12px;color:var(--ink-soft,var(--ink));opacity:0.85;margin-bottom:8px;}
+.oca-leg{font-size:11px;color:var(--ink-soft,var(--ink));opacity:0.75;margin-bottom:2px;}
+.oca-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.oca-price{font-size:15px;font-weight:800;}
+@media (max-width:700px){
+  .table-wrap{display:none;}
+  .cards-wrap{display:block;}
+  .filters{flex-direction:column;}
+  .filters input,.filters select,.filters button{width:100%;min-width:0;}
+}
 table{width:100%;border-collapse:collapse;font-size:14px;min-width:820px;}
 th{text-align:left;font-size:12px;color:var(--ink-soft);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap;}
 td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap;}
@@ -114,8 +128,9 @@ tr:last-child td{border-bottom:none;}
           <thead><tr><th>訂位代號</th><th>旅客</th><th>航班</th><th>航線</th><th>航班時間</th><th>金額</th><th>狀態</th><th>建立時間</th><th></th></tr></thead>
           <tbody id="ordersBody"></tbody>
         </table>
-        <div class="empty" id="emptyMsg" style="display:none;">沒有符合條件的訂單</div>
       </div>
+      <div class="cards-wrap" id="ordersCards"></div>
+      <div class="empty" id="emptyMsg" style="display:none;">沒有符合條件的訂單</div>
     </div>
   </div>
 </div>
@@ -185,6 +200,32 @@ tr:last-child td{border-bottom:none;}
     return status==='refunded' ? '<span class="badge badge-refunded">已退票</span>' : '<span class="badge badge-confirmed">已確認</span>';
   }
 
+  function makeRefundBtn(o, className){
+    const btn = document.createElement('button');
+    btn.type='button'; btn.className=className; btn.textContent = o.status==='refunded' ? '已退票' : '退票';
+    btn.disabled = o.status==='refunded';
+    btn.addEventListener('click', async function(){
+      if(!confirm('確定要將 '+o.referenceCode+' 標記為已退票嗎？')) return;
+      btn.disabled = true;
+      try{
+        const r = await adminFetch('/api/admin/bookings/'+encodeURIComponent(o.referenceCode)+'/refund', { method:'POST' });
+        if(!r.ok){ const d = await r.json(); alert(d.error||'退票失敗'); btn.disabled=false; return; }
+        loadOrders(); loadStats();
+      }catch(e){ btn.disabled=false; }
+    });
+    return btn;
+  }
+
+  function legsOf(o){
+    const legs = (o.legs && o.legs.length) ? o.legs : [{date:'',dep:o.depTime,arr:o.arrTime,duration:''}];
+    return legs.map(function(leg,i){
+      let label='';
+      if(legs.length===2) label = i===0?'去程 ':'回程 ';
+      else if(legs.length>=3) label = '第'+(i+1)+'段 ';
+      return label+leg.date+' '+leg.dep+'–'+leg.arr+'（'+leg.duration+'）';
+    });
+  }
+
   async function loadOrders(){
     const params = new URLSearchParams();
     if($('fSearch').value.trim()) params.set('search', $('fSearch').value.trim());
@@ -195,41 +236,35 @@ tr:last-child td{border-bottom:none;}
       const res = await adminFetch('/api/admin/bookings?'+params.toString());
       const orders = await res.json();
       const body = $('ordersBody'); body.innerHTML='';
+      const cards = $('ordersCards'); cards.innerHTML='';
       $('emptyMsg').style.display = orders.length ? 'none' : '';
+
       orders.forEach(function(o){
+        const legLines = legsOf(o);
+
         const tr = document.createElement('tr');
-        const legs = (o.legs && o.legs.length) ? o.legs : [{date:'',dep:o.depTime,arr:o.arrTime,duration:''}];
-        const legHtml = legs.map(function(leg,i){
-          let label='';
-          if(legs.length===2) label = i===0?'去程 ':'回程 ';
-          else if(legs.length>=3) label = '第'+(i+1)+'段 ';
-          return '<div>'+label+leg.date+' '+leg.dep+'–'+leg.arr+'（'+leg.duration+'）</div>';
-        }).join('');
         tr.innerHTML =
           '<td>'+o.referenceCode+'</td>'+
           '<td>'+o.passengerName+'<br><span style="color:var(--ink-soft);font-size:12px;">'+o.passengerEmail+'</span></td>'+
           '<td>'+o.airline+' '+o.flightNo+'</td>'+
           '<td>'+o.origin+' → '+o.destination+'</td>'+
-          '<td style="font-size:13px;white-space:normal;">'+legHtml+'</td>'+
+          '<td style="font-size:13px;white-space:normal;">'+legLines.map(function(l){ return '<div>'+l+'</div>'; }).join('')+'</td>'+
           '<td>'+fmtMoney(o.totalPrice)+'</td>'+
           '<td>'+badge(o.status)+'</td>'+
           '<td style="color:var(--ink-soft);font-size:12px;">'+new Date(o.createdAt).toLocaleString('zh-TW')+'</td>'+
           '<td></td>';
-        const actionTd = tr.lastElementChild;
-        const btn = document.createElement('button');
-        btn.type='button'; btn.className='btn btn-danger'; btn.textContent='退票';
-        btn.disabled = o.status==='refunded';
-        btn.addEventListener('click', async function(){
-          if(!confirm('確定要將 '+o.referenceCode+' 標記為已退票嗎？')) return;
-          btn.disabled = true;
-          try{
-            const r = await adminFetch('/api/admin/bookings/'+encodeURIComponent(o.referenceCode)+'/refund', { method:'POST' });
-            if(!r.ok){ const d = await r.json(); alert(d.error||'退票失敗'); btn.disabled=false; return; }
-            loadOrders(); loadStats();
-          }catch(e){ btn.disabled=false; }
-        });
-        actionTd.appendChild(btn);
+        tr.lastElementChild.appendChild(makeRefundBtn(o, 'btn btn-danger'));
         body.appendChild(tr);
+
+        const card = document.createElement('div'); card.className='order-card-admin';
+        card.innerHTML =
+          '<div class="oca-top"><span>'+o.referenceCode+'</span>'+badge(o.status)+'</div>'+
+          '<div class="oca-sub">'+o.passengerName+' · '+o.passengerEmail+'</div>'+
+          '<div class="oca-route">'+o.airline+' '+o.flightNo+'　'+o.origin+' → '+o.destination+'</div>'+
+          legLines.map(function(l){ return '<div class="oca-leg">'+l+'</div>'; }).join('')+
+          '<div class="oca-foot"><span class="oca-price">'+fmtMoney(o.totalPrice)+'</span></div>';
+        card.querySelector('.oca-foot').appendChild(makeRefundBtn(o, 'btn btn-danger'));
+        cards.appendChild(card);
       });
     }catch(e){}
   }
