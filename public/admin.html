@@ -61,6 +61,13 @@ header.admin-top{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
 .filters input,.filters select{width:auto;min-width:140px;flex:1;}
 
 .table-wrap{overflow-x:auto;}
+.col-schedule{min-width:230px;}
+.leg-line{font-size:12px;line-height:1.6;white-space:nowrap;}
+.leg-line+.leg-line{margin-top:5px;}
+.leg-label{font-weight:700;}
+.leg-date{color:var(--ink-soft);}
+.leg-time{font-weight:600;}
+.leg-dur{color:var(--ink-soft);}
 .cards-wrap{display:none;}
 .order-card-admin{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:14px;padding:14px;margin-bottom:10px;}
 .oca-top{display:flex;justify-content:space-between;align-items:center;font-size:14px;font-weight:700;margin-bottom:6px;}
@@ -220,10 +227,15 @@ tr:last-child td{border-bottom:none;}
     const legs = (o.legs && o.legs.length) ? o.legs : [{date:'',dep:o.depTime,arr:o.arrTime,duration:''}];
     return legs.map(function(leg,i){
       let label='';
-      if(legs.length===2) label = i===0?'去程 ':'回程 ';
-      else if(legs.length>=3) label = '第'+(i+1)+'段 ';
-      return label+leg.date+' '+leg.dep+'–'+leg.arr+'（'+leg.duration+'）';
+      if(legs.length===2) label = i===0?'去程':'回程';
+      else if(legs.length>=3) label = '第'+(i+1)+'段';
+      return { label:label, date:leg.date||'—', time:leg.dep+'–'+leg.arr, duration:leg.duration||'—' };
     });
+  }
+  function legLineHtml(leg){
+    return '<div class="leg-line">'+(leg.label?'<span class="leg-label">'+leg.label+'</span> ':'')+
+      '<span class="leg-date">'+leg.date+'</span> <span class="leg-time">'+leg.time+'</span> '+
+      '<span class="leg-dur">（'+leg.duration+'）</span></div>';
   }
 
   async function loadOrders(){
@@ -248,7 +260,7 @@ tr:last-child td{border-bottom:none;}
           '<td>'+o.passengerName+'<br><span style="color:var(--ink-soft);font-size:12px;">'+o.passengerEmail+'</span></td>'+
           '<td>'+o.airline+' '+o.flightNo+'</td>'+
           '<td>'+o.origin+' → '+o.destination+'</td>'+
-          '<td style="font-size:13px;white-space:normal;">'+legLines.map(function(l){ return '<div>'+l+'</div>'; }).join('')+'</td>'+
+          '<td class="col-schedule">'+legLines.map(legLineHtml).join('')+'</td>'+
           '<td>'+fmtMoney(o.totalPrice)+'</td>'+
           '<td>'+badge(o.status)+'</td>'+
           '<td style="color:var(--ink-soft);font-size:12px;">'+new Date(o.createdAt).toLocaleString('zh-TW')+'</td>'+
@@ -261,7 +273,7 @@ tr:last-child td{border-bottom:none;}
           '<div class="oca-top"><span>'+o.referenceCode+'</span>'+badge(o.status)+'</div>'+
           '<div class="oca-sub">'+o.passengerName+' · '+o.passengerEmail+'</div>'+
           '<div class="oca-route">'+o.airline+' '+o.flightNo+'　'+o.origin+' → '+o.destination+'</div>'+
-          legLines.map(function(l){ return '<div class="oca-leg">'+l+'</div>'; }).join('')+
+          legLines.map(legLineHtml).join('')+
           '<div class="oca-foot"><span class="oca-price">'+fmtMoney(o.totalPrice)+'</span></div>';
         card.querySelector('.oca-foot').appendChild(makeRefundBtn(o, 'btn btn-danger'));
         cards.appendChild(card);
