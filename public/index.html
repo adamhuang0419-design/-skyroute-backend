@@ -229,6 +229,10 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
 .overlay-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
 .overlay-head h3{font-size:24px;font-weight:800;margin:0;letter-spacing:-0.02em;}
 .order-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;}
+.ord-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;flex:none;}
+.ord-badge-refunded{background:rgba(255,91,82,0.16);color:var(--danger);}
+.ord-badge-boarding{background:rgba(57,217,138,0.16);color:#39d98a;}
+.ord-badge-pending{background:var(--tint-3);color:var(--ink-soft);}
 .order-card .oc-top{display:flex;justify-content:space-between;font-size:14px;font-weight:700;gap:8px;}
 .order-card .oc-sub{font-size:12px;color:var(--ink-soft);margin-top:4px;}
 .order-detail{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);text-align:center;}
@@ -401,6 +405,24 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       查詢訂單
     </button>
+    <div class="field" id="orderFilterField" style="display:none;">
+      <label>篩選</label>
+      <div class="csel" id="orderFilterCsel">
+        <button type="button" class="csel-trigger" id="orderFilterTrigger" style="padding-left:14px;" aria-haspopup="listbox" aria-expanded="false">
+          <span class="csel-value">全部訂單</span>
+          <svg class="csel-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="csel-menu" role="listbox">
+          <div class="csel-opt sel" data-value="all" role="option">全部訂單</div>
+          <div class="csel-opt" data-value="refunded" role="option">已退票</div>
+          <div class="csel-opt" data-value="upcoming" role="option">即將出發</div>
+          <div class="csel-opt" data-value="3months" role="option">3 個月內</div>
+          <div class="csel-opt" data-value="2026" role="option">2026</div>
+          <div class="csel-opt" data-value="2025" role="option">2025</div>
+          <div class="csel-opt" data-value="2024" role="option">2024</div>
+        </div>
+      </div>
+    </div>
     <div id="ordersList"></div>
   </div>
 </div>
@@ -430,45 +452,94 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
   applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
 
   // ---- orders overlay ----
+  let allOrders = [];
+  let orderFilter = 'all';
+
   $('ordersBtn').addEventListener('click', function(){ $('ordersOverlay').classList.add('open'); });
   $('ordersClose').addEventListener('click', function(){ $('ordersOverlay').classList.remove('open'); });
+
+  buildCustomSelect('orderFilterCsel', function(val){ orderFilter = val; renderOrders(); });
+
+  function orderFlightDate(o){
+    const leg0 = o.legs && o.legs[0];
+    return (leg0 && leg0.date) ? new Date(leg0.date+'T00:00:00') : null;
+  }
+  function filteredOrders(){
+    if(orderFilter==='all') return allOrders;
+    const now = new Date();
+    return allOrders.filter(function(o){
+      if(orderFilter==='refunded') return o.status==='refunded';
+      const fd = orderFlightDate(o);
+      if(orderFilter==='upcoming') return o.status!=='refunded' && fd && fd>now;
+      if(orderFilter==='3months') return fd && Math.abs(fd-now)/86400000<=92;
+      if(orderFilter==='2026'||orderFilter==='2025'||orderFilter==='2024') return fd && fd.getFullYear()===parseInt(orderFilter,10);
+      return true;
+    });
+  }
+  function legLinesHtml(o){
+    const legs = (o.legs && o.legs.length) ? o.legs : [{date:'',dep:o.depTime,arr:o.arrTime,duration:''}];
+    return legs.map(function(leg,i){
+      let label = '';
+      if(legs.length===2) label = i===0?'去程 ':'回程 ';
+      else if(legs.length>=3) label = '第'+(i+1)+'段 ';
+      return '<p class="meta" style="margin:2px 0;">'+label+leg.date+'　'+leg.dep+' – '+leg.arr+'　（'+leg.duration+'）</p>';
+    }).join('');
+  }
+  function bagRefundHtml(o){
+    const bag = o.checkedBags==null ? '託運行李：未提供' : ('託運行李：'+o.checkedBags+' 件');
+    const ref = o.refundable==null ? '退款條件：未提供' : ('退款條件：'+(o.refundable?'可退款':'不可退款'));
+    return '<p class="meta" style="margin:8px 0 0;">'+bag+'　'+ref+'</p>';
+  }
+
+  function renderOrders(){
+    const list = $('ordersList');
+    const orders = filteredOrders();
+    if(!orders.length){ list.innerHTML = '<p class="meta" style="margin:0;">沒有符合條件的訂單</p>'; return; }
+    list.innerHTML = '';
+    orders.forEach(function(o){
+      const card = document.createElement('div'); card.className='order-card';
+      const badge = o.status==='refunded' ? '<span class="ord-badge ord-badge-refunded">已退票</span>'
+        : (o.boardingPassAvailable ? '<span class="ord-badge ord-badge-boarding">可登機證</span>' : '<span class="ord-badge ord-badge-pending">尚未開放登機證</span>');
+      card.innerHTML = '<div class="oc-top"><span>'+o.airline+' '+o.flightNo+'</span>'+badge+'</div><div class="oc-sub">'+o.origin+' → '+o.destination+'　'+fmtMoney(o.totalPrice,'TWD')+'</div>';
+      card.addEventListener('click', async function(){
+        const existing = card.querySelector('.order-detail');
+        if(existing){ existing.remove(); return; }
+        const detail = document.createElement('div'); detail.className='order-detail';
+        card.appendChild(detail);
+
+        if(o.status==='refunded'){
+          detail.innerHTML = '<p class="meta" style="margin:0;">此訂單已退票，無法出示登機證</p>'+legLinesHtml(o)+bagRefundHtml(o);
+          return;
+        }
+        if(!o.boardingPassAvailable){
+          detail.innerHTML = '<p class="meta" style="margin:0;">尚未開放報到，起飛前 24 小時內才會顯示登機證</p>'+legLinesHtml(o)+bagRefundHtml(o);
+          return;
+        }
+        detail.innerHTML = '<p class="meta" style="margin:0;">載入電子機票中…</p>';
+        try{
+          const qr = await fetch('/api/bookings/'+encodeURIComponent(o.referenceCode)+'/qrcode');
+          const qd = await qr.json();
+          if(!qr.ok) throw new Error(qd.error||'qr failed');
+          detail.innerHTML = '<img src="'+qd.qrCodeDataUrl+'" alt="電子機票 QR Code"><p class="meta" style="margin-top:10px;margin-bottom:2px;">'+o.passengerName+'</p>'+legLinesHtml(o)+bagRefundHtml(o);
+        }catch(e){ detail.innerHTML = '<p class="error" style="margin:0;">QR Code 讀取失敗</p>'; }
+      });
+      list.appendChild(card);
+    });
+  }
+
   $('ordersSearchBtn').addEventListener('click', async function(){
     const email = $('ordersEmail').value.trim();
     const list = $('ordersList');
-    if(!email){ list.innerHTML = '<p class="error" style="margin:0;">請輸入 Email</p>'; return; }
+    if(!email){ list.innerHTML = '<p class="error" style="margin:0;">請輸入 Email</p>'; $('orderFilterField').style.display='none'; return; }
     list.innerHTML = '<p class="meta" style="margin:0;">查詢中…</p>';
     try{
       const res = await fetch('/api/bookings?email='+encodeURIComponent(email));
       const orders = await res.json();
       if(!res.ok) throw new Error(orders.error||'failed');
-      if(!orders.length){ list.innerHTML = '<p class="meta" style="margin:0;">找不到這個 Email 的訂單</p>'; return; }
-      list.innerHTML = '';
-      orders.forEach(function(o){
-        const card = document.createElement('div'); card.className='order-card';
-        card.innerHTML = '<div class="oc-top"><span>'+o.airline+' '+o.flightNo+'</span><span>'+o.referenceCode+'</span></div><div class="oc-sub">'+o.origin+' → '+o.destination+'　'+fmtMoney(o.totalPrice,'TWD')+'</div>';
-        card.addEventListener('click', async function(){
-          const existing = card.querySelector('.order-detail');
-          if(existing){ existing.remove(); return; }
-          const detail = document.createElement('div'); detail.className='order-detail';
-          detail.innerHTML = '<p class="meta" style="margin:0;">載入電子機票中…</p>';
-          card.appendChild(detail);
-          try{
-            const qr = await fetch('/api/bookings/'+encodeURIComponent(o.referenceCode)+'/qrcode');
-            const qd = await qr.json();
-            if(!qr.ok) throw new Error(qd.error||'qr failed');
-            const legs = (o.legs && o.legs.length) ? o.legs : [{date:'',dep:o.depTime,arr:o.arrTime,duration:''}];
-            let legLines = '';
-            legs.forEach(function(leg,i){
-              let label = '';
-              if(legs.length===2) label = i===0?'去程 ':'回程 ';
-              else if(legs.length>=3) label = '第'+(i+1)+'段 ';
-              legLines += '<p class="meta" style="margin:2px 0;">'+label+leg.date+'　'+leg.dep+' – '+leg.arr+'　（'+leg.duration+'）</p>';
-            });
-            detail.innerHTML = '<img src="'+qd.qrCodeDataUrl+'" alt="電子機票 QR Code"><p class="meta" style="margin-top:10px;margin-bottom:2px;">'+o.passengerName+'</p>'+legLines;
-          }catch(e){ detail.innerHTML = '<p class="error" style="margin:0;">QR Code 讀取失敗</p>'; }
-        });
-        list.appendChild(card);
-      });
+      allOrders = orders; orderFilter = 'all';
+      if(!orders.length){ list.innerHTML = '<p class="meta" style="margin:0;">找不到這個 Email 的訂單</p>'; $('orderFilterField').style.display='none'; return; }
+      $('orderFilterField').style.display='';
+      renderOrders();
     }catch(e){ list.innerHTML = '<p class="error" style="margin:0;">查詢失敗，請稍後再試</p>'; }
   });
 
@@ -665,6 +736,9 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
           else if(legs.length>=3) prefix = '第'+(i+1)+'段 ';
           html += '<div class="time">'+prefix+leg.dep+' – '+leg.arr+'　'+leg.duration+'</div>';
         });
+        const bagTxt = f.checkedBags==null ? '行李未提供' : ('託運 '+f.checkedBags+' 件');
+        const refTxt = f.refundable==null ? '退款未提供' : (f.refundable?'可退款':'不可退款');
+        html += '<div class="tag" style="margin-top:2px;">'+bagTxt+'　'+refTxt+'</div>';
         html += '</div><div class="fl-r"><div class="price">'+fmtMoney(f.totalPrice,f.currency)+'</div><div class="tag">'+(f.stops===0?'直飛':'轉機 '+f.stops+' 次')+'</div></div>';
         row.innerHTML = html;
         row.addEventListener('click', function(){ pickFlight(f); });
@@ -688,7 +762,7 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
     try{
       const selRes = await fetch('/api/select-offer', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ source:f.source, localFlightId:f.localFlightId, airline:f.airline, flightNo:f.flightNo, legs:f.legs, totalPrice:f.totalPrice, currency:f.currency, from:state.fromLabel, to:state.toLabel, pax:paxTotal })
+        body: JSON.stringify({ source:f.source, localFlightId:f.localFlightId, airline:f.airline, flightNo:f.flightNo, legs:f.legs, totalPrice:f.totalPrice, currency:f.currency, from:state.fromLabel, to:state.toLabel, pax:paxTotal, checkedBags:f.checkedBags, refundable:f.refundable })
       });
       const sel = await selRes.json();
       if(!selRes.ok) throw new Error(sel.error || 'select failed');
@@ -730,10 +804,14 @@ footer.note{text-align:center;font-size:11px;color:var(--ink-faint);margin-top:2
         else if(legs.length>=3) label = '第'+(i+1)+'段';
         legRows += sumRow(label, leg.date+'　'+leg.dep+' – '+leg.arr+'　（'+leg.duration+'）');
       });
+      const bagTxt = state.flight.checkedBags==null ? '未提供' : (state.flight.checkedBags+' 件');
+      const refTxt = state.flight.refundable==null ? '未提供' : (state.flight.refundable?'可退款':'不可退款');
       $('summaryCard').innerHTML =
         sumRow('航班', state.flight.airline+' '+state.flight.flightNo)+
         sumRow('航線', routeLabel)+
         legRows+
+        sumRow('每人託運行李', bagTxt)+
+        sumRow('退款條件', refTxt)+
         sumRow('乘客', name+'　x '+paxTotal)+
         '<div class="sum-total"><span>總金額</span><span>'+fmtMoney(data.totalPrice, state.currency)+'</span></div>';
       goStep(4);
